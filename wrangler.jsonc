@@ -1,0 +1,8 @@
+{
+  "name": "heetam-coffee",
+  "compatibility_date": "2026-10-01",
+  "assets": { "directory": "./public" },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "heetam-db", "database_id": "5b45c712-66bb-480f-8def-5a5416fea435" }
+  ]
+}

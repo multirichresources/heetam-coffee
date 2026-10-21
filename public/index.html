@@ -1,0 +1,849 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Fresh roasted coffee beans Heetam Coffee. Premium grade Arabica, pos ke seluruh Malaysia.">
+<title>Heetam Coffee Roastery</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Great+Vibes&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: kedai satu halaman tema hitam-emas ikut beg Heetam. Hero 2 lajur dengan 3 beg + wap, jalur taste notes, grid foto beg, popup poster, cart kanan, checkout skrin penuh. Satu tema gelap (sengaja). */
+:root{
+  --bg:#0D0A07; --bg-2:#15100B; --surface:#1B150F; --surface-2:#231B13; --line:#3A2D20;
+  --ink:#F5EDE0; --muted:#B8A994; --gold:#D9A441; --gold-hi:#F3CD74; --gold-deep:#9A6C1E;
+  --on-gold:#1A1206; --danger:#F2867A; --ok:#7FC48A; --wa:#1F8F4E;
+  --foil:linear-gradient(135deg,#F6D47C 0%,#C99230 48%,#EDBD5E 72%,#B9831F 100%);
+  --display:"Bebas Neue","Oswald","Arial Narrow",Impact,sans-serif;
+  --body:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --script:"Great Vibes","Brush Script MT",cursive;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:25;background:var(--bg)}
+.grain{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.07;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+h1,h2,h3{text-wrap:balance;margin:0;font-weight:400}
+p{margin:0}
+a{color:inherit}
+img{display:block;max-width:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--gold-hi);outline-offset:3px}
+main,footer,header{position:relative;z-index:2}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+.script{font-family:var(--script);color:var(--gold-hi);font-size:1.6em;line-height:1}
+.h2{font-family:var(--display);font-size:clamp(40px,5.4vw,68px);line-height:.95;letter-spacing:.01em}
+.gold-text{background:var(--foil);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* Butang */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1.5px solid var(--gold);background:transparent;color:var(--ink);padding:13px 22px;border-radius:40px;font-weight:600;cursor:pointer;text-decoration:none;font-size:15px;letter-spacing:.02em;transition:background .2s,color .2s,transform .2s,box-shadow .2s}
+.btn:hover{background:rgba(217,164,65,.12);transform:translateY(-1px)}
+.btn.gold{background:var(--foil);border-color:transparent;color:var(--on-gold)}
+.btn.gold:hover{box-shadow:0 8px 26px rgba(217,164,65,.35);background:var(--foil)}
+.btn.block{width:100%}
+.btn[disabled]{opacity:.65;cursor:progress;transform:none}
+.link-btn{background:none;border:0;padding:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px}
+
+.demo-bar{background:var(--gold-deep);color:var(--on-gold);position:relative;z-index:3}
+.demo-bar .wrap{padding-block:6px;font-size:12px;font-weight:600;letter-spacing:.06em;text-align:center}
+
+/* Header */
+.site-header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(13,10,7,.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.site-header .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:70px}
+.logo img{height:46px;width:auto}
+.nav{display:flex;align-items:center;gap:28px}
+.nav a{text-decoration:none;font-weight:500;font-size:15px;color:var(--muted);transition:color .2s}
+.nav a:hover{color:var(--gold-hi)}
+.cart-btn{display:inline-flex;align-items:center;gap:9px;background:transparent;color:var(--ink);border:1.5px solid var(--gold);border-radius:40px;padding:8px 16px;font-weight:600;cursor:pointer}
+.cart-btn svg{color:var(--gold)}
+.cart-count{background:var(--foil);color:var(--on-gold);border-radius:20px;min-width:22px;padding:0 7px;font-size:12px;font-weight:700;text-align:center;line-height:20px;font-variant-numeric:tabular-nums}
+.cart-btn.bump{animation:bump .45s}
+@keyframes bump{30%{transform:scale(1.12)}}
+@media (max-width:780px){.nav a{display:none}.logo img{height:38px}}
+
+/* Hero */
+.hero{position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;right:-10%;top:-20%;width:75%;aspect-ratio:1;max-width:100%;background:radial-gradient(circle,rgba(217,164,65,.26) 0%,rgba(217,164,65,.08) 38%,transparent 66%);pointer-events:none}
+.hero .wrap{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center;padding-block:64px 80px}
+.hero h1{font-family:var(--display);font-size:clamp(58px,8.6vw,118px);line-height:.86;letter-spacing:.005em;margin-top:16px}
+.hero h1 span{display:block}
+.hero .lead{font-size:clamp(16px,1.5vw,18.5px);color:var(--muted);max-width:44ch;margin-top:24px}
+.hero .ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.facts{display:flex;flex-wrap:wrap;gap:10px;margin-top:34px}
+.facts span{border:1px solid var(--line);background:rgba(27,21,15,.7);border-radius:40px;padding:6px 13px;font-size:12.5px;color:var(--muted)}
+.facts span b{color:var(--gold-hi);font-weight:600}
+.hero-art{position:relative;aspect-ratio:1/1.02;width:100%;max-width:540px;justify-self:center}
+.hero-art .bagimg{position:absolute;width:44%;aspect-ratio:3/4;object-fit:cover;border-radius:14px;box-shadow:0 30px 50px rgba(0,0,0,.6),0 0 0 1px rgba(243,205,116,.18)}
+.hero-art .b1{left:2%;top:22%;transform:rotate(-9deg);animation:float1 7s ease-in-out infinite}
+.hero-art .b3{right:2%;top:22%;transform:rotate(9deg);animation:float3 7.5s ease-in-out infinite}
+.hero-art .b2{left:28%;top:12%;width:46%;z-index:2;animation:float2 6s ease-in-out infinite}
+@keyframes float1{50%{transform:rotate(-9deg) translateY(-10px)}}
+@keyframes float2{50%{transform:translateY(-14px)}}
+@keyframes float3{50%{transform:rotate(9deg) translateY(-8px)}}
+.steam{position:absolute;left:30%;top:-6%;width:40%;height:34%;z-index:3;pointer-events:none}
+.steam path{fill:none;stroke:rgba(255,244,226,.55);stroke-width:7;stroke-linecap:round;filter:blur(5px);opacity:0;animation:rise 5.5s ease-in-out infinite}
+.steam path:nth-child(2){animation-delay:1.8s}
+.steam path:nth-child(3){animation-delay:3.6s}
+@keyframes rise{0%{opacity:0;transform:translateY(40px) scaleY(.8)}25%{opacity:.85}70%{opacity:.35}100%{opacity:0;transform:translateY(-40px) scaleY(1.15)}}
+.hero-badge{position:absolute;right:0;bottom:4%;z-index:4;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 16px;box-shadow:0 14px 30px rgba(0,0,0,.5)}
+.hero-badge .script{font-size:26px}
+.hero-badge small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+@media (max-width:860px){
+  .hero .wrap{grid-template-columns:1fr;gap:28px;padding-block:44px 60px}
+  .hero-art{max-width:400px}
+}
+
+/* Jalur taste notes */
+.ticker{border-block:1px solid var(--line);background:var(--bg-2);overflow:hidden;position:relative;z-index:2}
+.ticker-track{display:flex;width:max-content;animation:tick 48s linear infinite}
+.ticker-track span{font-family:var(--display);font-size:26px;letter-spacing:.06em;padding:14px 0;white-space:nowrap;color:var(--muted)}
+.ticker-track span i{font-style:normal;color:var(--gold);margin:0 22px}
+@keyframes tick{to{transform:translateX(-50%)}}
+
+/* Seksyen */
+.section{padding-block:84px}
+.section.tint{background:var(--bg-2);border-block:1px solid var(--line)}
+.section-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:22px;margin-bottom:36px}
+.section-head .eyebrow{margin-bottom:12px}
+
+.filters{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:transparent;color:var(--muted);border-radius:40px;padding:8px 16px;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s}
+.chip:hover{border-color:var(--gold);color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--foil);border-color:transparent;color:var(--on-gold);font-weight:600}
+
+/* Grid beans */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:22px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;display:flex;flex-direction:column;overflow:hidden;min-width:0;transition:transform .3s,border-color .3s,box-shadow .3s}
+.card:hover{transform:translateY(-6px);border-color:var(--gold-deep);box-shadow:0 22px 40px rgba(0,0,0,.45),0 0 0 1px rgba(217,164,65,.25)}
+.card-img{position:relative;display:block;width:100%;padding:0;border:0;background:var(--bg);cursor:pointer;aspect-ratio:3/4;overflow:hidden}
+.card-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.card:hover .card-img img{transform:scale(1.06)}
+.card-img .badge{position:absolute;left:12px;top:12px;background:rgba(13,10,7,.82);border:1px solid var(--gold-deep);color:var(--gold-hi);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:5px 10px;border-radius:30px}
+.card-img .badge.strong{color:#FF9B7A;border-color:#8A3A22}
+.card-body{padding:18px 18px 20px;display:flex;flex-direction:column;gap:8px;flex:1}
+.tag{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+.card h3{font-family:var(--display);font-size:32px;line-height:.95;letter-spacing:.01em}
+.origin{font-size:13px;color:var(--muted)}
+.notes{font-size:14.5px}
+.roast-pill{align-self:flex-start;font-size:12px;border:1px solid var(--line);border-radius:30px;padding:3px 10px;color:var(--muted)}
+.roast-pill b{color:var(--ink);font-weight:600}
+.card-foot{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:auto;padding-top:14px;border-top:1px solid var(--line)}
+.prices{display:flex;flex-direction:column;font-size:12.5px;color:var(--muted);line-height:1.35;font-variant-numeric:tabular-nums}
+.prices b{color:var(--gold-hi);font-size:16px;font-weight:700}
+.card-foot .btn{padding:9px 18px}
+
+/* Cara order */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:26px;min-width:0;position:relative;overflow:hidden}
+.step-num{font-family:var(--display);font-size:92px;line-height:.8;position:absolute;right:16px;top:14px;color:rgba(217,164,65,.14)}
+.step .ico{width:46px;height:46px;border-radius:50%;border:1.5px solid var(--gold);display:grid;place-items:center;color:var(--gold-hi);margin-bottom:18px}
+.step h3{font-family:var(--display);font-size:30px;letter-spacing:.01em;margin-bottom:6px}
+.step p{color:var(--muted);font-size:15px}
+@media (max-width:820px){.steps{grid-template-columns:1fr}}
+
+/* Kenapa segar */
+.fresh{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:center}
+.fresh-photo{position:relative;border-radius:18px;overflow:hidden;aspect-ratio:4/5;max-width:100%}
+.fresh-photo img{width:100%;height:100%;object-fit:cover}
+.fresh-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(13,10,7,.85))}
+.fresh-photo .cap{position:absolute;left:20px;bottom:18px;z-index:2;font-size:13px;color:var(--muted)}
+.fresh-photo .cap .script{font-size:30px;display:block}
+.reasons{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:28px}
+.reason{border-top:1.5px solid var(--gold-deep);padding-top:14px}
+.reason h3{font-family:var(--display);font-size:26px;letter-spacing:.02em;color:var(--gold-hi)}
+.reason p{color:var(--muted);font-size:15px;margin-top:4px}
+.tip{margin-top:26px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;font-size:15px;color:var(--muted)}
+.tip b{color:var(--ink)}
+@media (max-width:860px){.fresh{grid-template-columns:1fr;gap:32px}.fresh-photo{aspect-ratio:16/11}}
+@media (max-width:520px){.reasons{grid-template-columns:1fr}}
+
+/* Testimoni */
+.reviews{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.review-slot{border:1.5px dashed var(--line);border-radius:16px;padding:26px;min-height:180px;display:flex;flex-direction:column;justify-content:space-between;gap:14px;color:var(--muted)}
+.review-slot .stars{color:var(--gold);letter-spacing:4px}
+@media (max-width:820px){.reviews{grid-template-columns:1fr}}
+
+/* Footer */
+.site-footer{background:#080604;border-top:1px solid var(--line)}
+.site-footer .wrap{padding-block:60px 40px}
+.foot-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr 1.5fr;gap:32px}
+.foot-grid > *{min-width:0}
+.site-footer h4{font-size:12px;letter-spacing:.2em;text-transform:uppercase;margin:0 0 14px;color:var(--gold);font-weight:600}
+.site-footer ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+.site-footer a{text-decoration:none;color:var(--muted)}
+.site-footer a:hover{color:var(--gold-hi)}
+.news{display:flex;gap:8px}
+.news input{flex:1;min-width:0;padding:11px 14px;border-radius:40px;border:1px solid var(--line);background:var(--surface)}
+.news .btn{padding:10px 18px}
+.pay-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+.pay-chip{font-size:11px;font-weight:600;letter-spacing:.08em;border:1px solid var(--line);color:var(--muted);border-radius:6px;padding:4px 8px}
+.foot-base{margin-top:46px;padding-top:20px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
+@media (max-width:860px){.foot-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:500px){.foot-grid{grid-template-columns:1fr}}
+
+/* Lapisan */
+.layer{position:fixed;inset:0;z-index:50}
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.66);opacity:0;transition:opacity .25s}
+.layer.open .scrim{opacity:1}
+.close-x{position:absolute;right:12px;top:12px;z-index:3;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:rgba(13,10,7,.85);color:var(--ink);cursor:pointer;font-size:22px;line-height:1}
+
+.sheet-panel{position:absolute;left:50%;top:50%;transform:translate(-50%,-46%) scale(.98);opacity:0;transition:transform .28s,opacity .28s;width:min(920px,calc(100% - 32px));max-height:calc(100% - 48px);overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:18px;display:grid;grid-template-columns:1fr 1fr}
+.layer.open .sheet-panel{transform:translate(-50%,-50%) scale(1);opacity:1}
+.sheet-img{background:var(--bg)}
+.sheet-img img{width:100%;height:100%;object-fit:cover;aspect-ratio:1}
+.sheet-body{padding:28px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.sheet-body h3{font-family:var(--display);font-size:46px;line-height:.92}
+.specs{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px;margin:0}
+.specs dt{color:var(--gold);font-weight:600}
+.specs dd{margin:0;color:var(--muted)}
+.opt-label{font-size:11.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;display:block}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label{border:1.5px solid var(--line);border-radius:12px;padding:11px 14px;cursor:pointer;display:flex;flex-direction:column;gap:1px;transition:border-color .2s,background .2s}
+.seg label b{font-family:var(--display);font-size:24px;letter-spacing:.02em;line-height:1}
+.seg label span{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.seg input:checked + label{border-color:var(--gold);background:rgba(217,164,65,.1)}
+.seg input:checked + label span{color:var(--gold-hi)}
+.seg input:focus-visible + label{outline:2px solid var(--gold-hi);outline-offset:2px}
+.qty{display:inline-flex;align-items:center;border:1.5px solid var(--line);border-radius:40px}
+.qty button{width:38px;height:38px;border:0;background:none;cursor:pointer;font-size:18px;color:var(--ink)}
+.qty output{min-width:28px;text-align:center;font-weight:600;font-variant-numeric:tabular-nums}
+.sheet-row{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap}
+@media (max-width:720px){
+  .sheet-panel{left:0;right:0;top:auto;bottom:0;width:100%;max-height:94%;transform:translateY(40px);border-radius:20px 20px 0 0;grid-template-columns:1fr;padding-bottom:env(safe-area-inset-bottom,0px)}
+  .layer.open .sheet-panel{transform:translateY(0)}
+  .sheet-img img{aspect-ratio:16/10;object-position:center 40%}
+  .sheet-body{padding:20px max(20px,env(safe-area-inset-left,0px)) 24px max(20px,env(safe-area-inset-right,0px))}
+  .sheet-body h3{font-size:38px}
+}
+
+/* Cart */
+.drawer-panel{position:absolute;right:0;top:0;bottom:0;width:min(440px,100%);background:var(--surface);border-left:1px solid var(--line);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-right:env(safe-area-inset-right,0px)}
+.layer.open .drawer-panel{transform:translateX(0)}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line)}
+.drawer-head h3{font-family:var(--display);font-size:34px;line-height:1}
+.drawer-head .close-x{position:static}
+.drawer-body{flex:1;overflow:auto;padding:6px 20px}
+.line-item{display:grid;grid-template-columns:60px 1fr auto;gap:14px;padding:14px 0;border-bottom:1px solid var(--line);align-items:start}
+.line-item img{width:60px;height:80px;object-fit:cover;border-radius:8px}
+.li-name{font-weight:600;line-height:1.25}
+.li-meta{font-size:12.5px;color:var(--muted);margin-top:3px}
+.li-actions{display:flex;align-items:center;gap:14px;margin-top:8px}
+.li-actions .qty button{width:30px;height:30px;font-size:16px}
+.li-price{font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.empty{padding:52px 4px;text-align:center;color:var(--muted);display:flex;flex-direction:column;gap:16px;align-items:center}
+.drawer-foot{border-top:1px solid var(--line);padding:16px 20px 20px;display:flex;flex-direction:column;gap:12px}
+.totals{display:flex;flex-direction:column;gap:6px;font-size:15px}
+.totals div{display:flex;justify-content:space-between;gap:12px}
+.totals .num{font-variant-numeric:tabular-nums}
+.totals .grand{font-weight:700;font-size:18px;padding-top:9px;border-top:1px solid var(--line);margin-top:4px}
+.totals .grand .num{color:var(--gold-hi)}
+.small{font-size:12.5px;color:var(--muted)}
+
+/* Checkout */
+.full{background:var(--bg);overflow:auto;opacity:0;transition:opacity .25s}
+.full.open{opacity:1}
+.co-top{border-bottom:1px solid var(--line);background:var(--bg);position:sticky;top:0;z-index:2;padding-top:env(safe-area-inset-top,0px)}
+.co-top .wrap{display:flex;align-items:center;justify-content:space-between;min-height:64px;gap:16px}
+.co-top img{height:38px;width:auto}
+.back{background:none;border:0;cursor:pointer;font-weight:600;padding:8px 0;color:var(--muted)}
+.back:hover{color:var(--gold-hi)}
+.co-grid{display:grid;grid-template-columns:1.25fr .9fr;gap:40px;align-items:start;padding-block:36px 64px}
+.co-grid h2{font-family:var(--display);font-size:clamp(44px,5vw,60px);line-height:1;margin-bottom:24px}
+fieldset{border:0;padding:0;margin:0 0 30px;display:grid;grid-template-columns:1fr 1fr;gap:14px 16px}
+legend{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;padding:0;display:block}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field.wide{grid-column:1/-1}
+.field label{font-weight:600;font-size:14px}
+.field label .opt{font-weight:400;color:var(--muted)}
+.field input,.field textarea,.field select{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);font-size:16px}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--gold);outline:none}
+.field .err{color:var(--danger);font-size:13px}
+.field .err:empty{display:none}
+.field [aria-invalid="true"]{border-color:var(--danger)}
+.hint{font-size:13px;color:var(--muted)}
+.welcome{grid-column:1/-1;background:rgba(217,164,65,.12);border:1px solid var(--gold-deep);border-radius:12px;padding:10px 14px;font-size:14px}
+.notice{grid-column:1/-1;border-left:3px solid var(--gold);padding:6px 12px;font-size:14px;color:var(--muted)}
+.consent{grid-column:1/-1;display:flex;gap:10px;align-items:flex-start;font-size:15px;color:var(--muted)}
+.consent input{width:20px;height:20px;margin-top:2px;accent-color:var(--gold);flex-shrink:0}
+.summary{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px;position:sticky;top:84px;display:flex;flex-direction:column;gap:14px}
+.summary h3{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.sum-item{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;font-size:14px;padding-bottom:12px;border-bottom:1px dashed var(--line)}
+.sum-item img{width:44px;height:58px;object-fit:cover;border-radius:6px}
+.pay-methods{display:flex;flex-wrap:wrap;gap:6px}
+@media (max-width:880px){.co-grid{grid-template-columns:1fr;gap:10px}.summary{position:static}}
+@media (max-width:520px){fieldset{grid-template-columns:1fr}}
+
+/* Berjaya */
+.success{max-width:660px;margin:0 auto;padding-block:48px 72px;display:flex;flex-direction:column;gap:20px}
+.success .tick{width:66px;height:66px;border-radius:50%;background:var(--foil);color:var(--on-gold);display:grid;place-items:center;font-size:32px;font-weight:700}
+.success h2{font-family:var(--display);font-size:clamp(48px,7vw,74px);line-height:.92}
+.order-no{font-weight:700;color:var(--gold-hi);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:2px 9px;font-variant-numeric:tabular-nums}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+
+/* WhatsApp & toast */
+.fab{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--wa);color:#fff;border:0;border-radius:40px;padding:12px 18px;font-weight:600;cursor:pointer;box-shadow:0 10px 24px rgba(0,0,0,.45);display:flex;align-items:center;gap:8px}
+.toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;z-index:80;background:var(--ink);color:var(--bg);padding:11px 18px;border-radius:40px;font-size:14px;font-weight:500;transition:opacity .2s,transform .2s;max-width:calc(100% - 32px);pointer-events:none;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}
+  .steam path{opacity:.4}
+}
+</style>
+</head>
+<body>
+
+
+<div class="grain" aria-hidden="true"></div>
+<div class="demo-bar"><div class="wrap">DRAF DEMO · Harga ikut poster Heetam · Bayaran belum sebenar</div></div>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="Heetam Coffee, laman utama"><img src="img/logo.png" alt="Heetam Coffee" width="255" height="80"></a>
+    <nav class="nav" aria-label="Menu utama">
+      <a href="#beans">Beans</a>
+      <a href="#cara-order">Cara Order</a>
+      <a href="#fresh">Tentang</a>
+      <a href="#bantuan">Bantuan</a>
+      <button class="cart-btn" id="cart-open" type="button" aria-label="Buka cart">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+        Cart <span class="cart-count" id="cart-count">0</span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <p class="eyebrow">Fresh Roasted Coffee Beans</p>
+        <h1><span>Freshly Roasted.</span><span class="gold-text">Aroma Sampai ke Rumah.</span></h1>
+        <p class="lead">Biji kopi premium grade Arabica dari Heetam Coffee. Di-roast fresh, dibungkus kemas, terus dipos ke seluruh Malaysia.</p>
+        <div class="ctas">
+          <a class="btn gold" href="#beans">Shop Beans</a>
+          <a class="btn" href="#cara-order">Cara Order</a>
+        </div>
+        <div class="facts">
+          <span><b>Premium Grade</b> Arabica</span>
+          <span><b>Freshly</b> Roasted</span>
+          <span>No Artificial or Coloring</span>
+          <span>Pos <b>RM10</b> (bawah 3kg)</span>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <svg class="steam" viewBox="0 0 200 160" preserveAspectRatio="none">
+          <path d="M70 160 C 50 120, 95 100, 75 60 S 90 10, 80 0"/>
+          <path d="M100 160 C 120 125, 80 95, 104 58 S 92 14, 106 0"/>
+          <path d="M130 160 C 112 122, 150 98, 128 62 S 140 16, 126 0"/>
+        </svg>
+        <img class="bagimg b1" src="img/ethiopia-bombe-bag.jpg" alt="">
+        <img class="bagimg b3" src="img/king-gayo-bag.jpg" alt="">
+        <img class="bagimg b2" src="img/italian-mafia-bag.jpg" alt="">
+        <div class="hero-badge"><span class="script">Roast to Perfection</span><small>7 pilihan beans · 500g &amp; 1kg</small></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="ticker" aria-hidden="true"><div class="ticker-track" id="ticker"></div></div>
+
+  <section class="section" id="beans">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Our Beans</p>
+          <h2 class="h2">Pilih Ikut <span class="gold-text">Selera Anda</span></h2>
+        </div>
+        <div class="filters" role="group" aria-label="Tapis beans" id="filters">
+          <button class="chip" type="button" data-filter="all" aria-pressed="true">Semua</button>
+          <button class="chip" type="button" data-filter="Single Origin" aria-pressed="false">Single Origin</button>
+          <button class="chip" type="button" data-filter="Barista Blend" aria-pressed="false">Barista Blend</button>
+          <button class="chip" type="button" data-filter="House Blend" aria-pressed="false">House Blend</button>
+          <button class="chip" type="button" data-filter="Specialty" aria-pressed="false">Specialty</button>
+        </div>
+      </div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </section>
+
+  <section class="section tint" id="cara-order">
+    <div class="wrap">
+      <div class="section-head"><div><p class="eyebrow">Cara Order</p><h2 class="h2">Tiga Langkah, <span class="gold-text">Sampai Depan Pintu</span></h2></div></div>
+      <div class="steps">
+        <div class="step"><span class="step-num">1</span>
+          <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><ellipse cx="12" cy="12" rx="6.5" ry="9" transform="rotate(30 12 12)"/><path d="M9 5.5c3 3 3 9.5 6 13"/></svg></div>
+          <h3>Pilih Beans</h3><p>Ikut selera anda, sama ada floral, chocolate, caramel atau strong bold.</p></div>
+        <div class="step"><span class="step-num">2</span>
+          <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 3h10l-1 5H8L7 3Z"/><rect x="6" y="8" width="12" height="13" rx="2"/><path d="M10 13h4"/></svg></div>
+          <h3>Pilih Saiz &amp; Kisaran</h3><p>500g atau 1kg. Whole Bean, atau Halus kalau tiada grinder.</p></div>
+        <div class="step"><span class="step-num">3</span>
+          <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg></div>
+          <h3>Bayar &amp; Kami Pos</h3><p>Bayar online guna FPX, DuitNow atau e-wallet. Tracking number dihantar kepada anda.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="fresh">
+    <div class="wrap fresh">
+      <div class="fresh-photo">
+        <img src="img/royal-indo-bag.jpg" alt="Beg Heetam Royal Indo Barista Blend dengan biji kopi">
+        <div class="cap"><span class="script">Heetam Coffee</span>Label setiap beg ada ruang Roast Date</div>
+      </div>
+      <div>
+        <p class="eyebrow">Tentang Fresh</p>
+        <h2 class="h2" style="margin-top:12px">Kenapa Bean <span class="gold-text">Segar Penting?</span></h2>
+        <div class="reasons">
+          <div class="reason"><h3>Aroma Lebih Kuat</h3><p>Aroma biji kopi paling kaw dalam minggu-minggu awal selepas roast.</p></div>
+          <div class="reason"><h3>Rasa Lebih Jelas</h3><p>Taste notes macam chocolate, caramel dan floral lebih terasa dalam cawan.</p></div>
+          <div class="reason"><h3>Ada Roast Date</h3><p>Setiap beg Heetam ada ruang Roast Date pada label, jadi anda tahu bila beans di-roast.</p></div>
+          <div class="reason"><h3>No Artificial</h3><p>Natural coffee bean, tanpa perisa tiruan atau pewarna.</p></div>
+        </div>
+        <p class="tip"><b>Tip simpan:</b> tutup rapat dalam beg asal, jauh dari cahaya dan panas. Whole Bean kekal fresh lebih lama berbanding Halus.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section tint" id="testimoni">
+    <div class="wrap">
+      <div class="section-head"><div><p class="eyebrow">Kata Pelanggan</p><h2 class="h2">Testimoni</h2></div></div>
+      <div class="reviews">
+        <div class="review-slot"><span class="stars">★★★★★</span><p>Ruang testimoni #1. Letak gambar dan ayat sebenar pelanggan Heetam di sini.</p></div>
+        <div class="review-slot"><span class="stars">★★★★★</span><p>Ruang testimoni #2. Screenshot WhatsApp pun boleh, dengan izin pelanggan.</p></div>
+        <div class="review-slot"><span class="stars">★★★★★</span><p>Ruang testimoni #3.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer" id="bantuan">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <img src="img/logo.png" alt="Heetam Coffee" width="255" height="80" style="height:52px;width:auto">
+        <p style="margin-top:14px;color:var(--muted);max-width:30ch">Fresh roasted coffee beans, pos ke seluruh Malaysia.</p>
+      </div>
+      <div>
+        <h4>Shop</h4>
+        <ul><li><a href="#beans" data-jump="all">Semua Beans</a></li><li><a href="#beans" data-jump="Single Origin">Single Origin</a></li><li><a href="#beans" data-jump="Barista Blend">Barista Blend</a></li><li><a href="#beans" data-jump="House Blend">House Blend</a></li></ul>
+      </div>
+      <div>
+        <h4>Bantuan</h4>
+        <ul><li><a href="#cara-order">Cara Order</a></li><li><a href="#bantuan">Penghantaran &amp; Pos</a></li><li><a href="#bantuan">Hubungi Kami</a></li></ul>
+      </div>
+      <div>
+        <h4>Info Beans Baru &amp; Promo</h4>
+        <form class="news" id="news-form" novalidate>
+          <label for="news-email" style="position:absolute;left:-9999px">Emel</label>
+          <input id="news-email" type="email" placeholder="Emel anda" autocomplete="email">
+          <button class="btn gold" type="submit">Subscribe</button>
+        </form>
+        <div class="pay-row"><span class="pay-chip">FPX</span><span class="pay-chip">DUITNOW QR</span><span class="pay-chip">E-WALLET</span><span class="pay-chip">VISA / MASTERCARD</span></div>
+        <p class="small" style="margin-top:10px">Secure payment by CHIP</p>
+      </div>
+    </div>
+    <div class="foot-base"><span>© 2026 Heetam Coffee</span><span>Privacy Policy · Terms</span></div>
+  </div>
+</footer>
+
+<button class="fab" type="button" id="fab" aria-label="WhatsApp Heetam">
+  <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3a.4.4 0 0 0 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .2-1.2c-.1-.1-.3-.2-.5-.3Z"/></svg>
+  WhatsApp
+</button>
+
+<div class="layer" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+  <div class="scrim" data-close></div>
+  <div class="sheet-panel" id="sheet-panel"></div>
+</div>
+
+<div class="layer" id="cart" hidden role="dialog" aria-modal="true" aria-labelledby="cart-title">
+  <div class="scrim" data-close></div>
+  <div class="drawer-panel">
+    <div class="drawer-head"><h3 id="cart-title">Cart Anda</h3><button class="close-x" type="button" data-close aria-label="Tutup cart">×</button></div>
+    <div class="drawer-body" id="cart-body"></div>
+    <div class="drawer-foot" id="cart-foot"></div>
+  </div>
+</div>
+
+<div class="layer full" id="checkout" hidden role="dialog" aria-modal="true" aria-label="Checkout">
+  <div class="co-top">
+    <div class="wrap">
+      <button class="back" type="button" data-close>← Kembali ke kedai</button>
+      <img src="img/logo.png" alt="Heetam Coffee" width="255" height="80">
+    </div>
+  </div>
+  <div class="wrap" id="co-view"></div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- Produk Heetam (ikut poster) ---------- */
+  var PRODUCTS = [
+    {id:"ethiopia-bombe", name:"Ethiopia Bombe", cat:"Specialty", tag:"Specialty", origin:"Ethiopia & Brazil", bean:"100% Arabica", aroma:"Strong, Floral", notes:"Milk Chocolate, Nutty Caramel, Jasmine", body:"Full & Rounded", acid:"Bright", after:"Strong", roast:"Medium Dark", price:{"500g":65,"1kg":95}},
+    {id:"royal-indo", name:"Royal Indo", cat:"Barista Blend", tag:"Barista Blend", origin:"Java Indonesia & Brazil", bean:"100% Arabica", aroma:"Strong, Sugar Browning, Hints of Citrus Blossom", notes:"Herbs Spices, Malt, Chocolate, Smoky Finish", body:"Full & Rounded", acid:"Bright", after:"Strong", roast:"Medium Dark", price:{"500g":54.9,"1kg":85}},
+    {id:"brazil-parana", name:"Brazil Parana", cat:"Single Origin", tag:"Single Origin", origin:"Brazil · Natural Process", bean:"100% Arabica", aroma:"Toasted Nut, Chocolate, Cinnamon", notes:"Toasted Nut, Chocolate, Cinnamon", body:"Full & Rounded", acid:"Bright", after:"Strong", roast:"Medium Dark", price:{"500g":59.9,"1kg":85}},
+    {id:"king-gayo", name:"King Gayo", cat:"Barista Blend", tag:"Barista Blend", origin:"Indonesia Sumatera", bean:"100% Arabica", aroma:"Strong, Floral", notes:"Butterscotch, Dark Chocolate, Clove, Nutty", body:"Full & Rounded", acid:"Bright", after:"Strong", roast:"Medium Dark", price:{"500g":65,"1kg":95}},
+    {id:"brazil-el-salvador", name:"Brazil El-Salvador", cat:"House Blend", tag:"House Blend", origin:"Brazil, El Salvador", bean:"100% Arabica", aroma:"Toasted Caramel", notes:"Dark Chocolate, Toasted Caramel", body:"Full & Rounded", acid:"Bright", after:"Strong", roast:"Medium Dark", price:{"500g":54.9,"1kg":85}},
+    {id:"cartel-papua", name:"Cartel Papua", cat:"Barista Blend", tag:"Cafe Blend", origin:"Brazil Samba, Papua New Guinea Korofeigu", bean:"100% Arabica", aroma:"Toasted Caramel", notes:"Dark Chocolate, Toasted Caramel", body:"Full & Rounded", acid:"Bright", after:"Strong", roast:"Medium Dark", price:{"500g":65,"1kg":89}},
+    {id:"italian-mafia", name:"Italian Mafia", cat:"House Blend", tag:"House Blend", strong:true, origin:"Brazil & Java", bean:"60% Arabica · 40% Robusta", aroma:"Strong & Bold", notes:"Robust, Sweet but Charred Flavor", body:"Full & Rounded", acid:"Bright", after:"Strong, Sweet but Charred", roast:"Dark", price:{"500g":54.9,"1kg":85}}
+  ];
+  var GRINDS = [{v:"whole", l:"Whole Bean", d:"Biji penuh"}, {v:"fine", l:"Halus", d:"Ground"}];
+  var KG = {"500g":0.5, "1kg":1};
+  var STATES = ["Johor","Kedah","Kelantan","Melaka","Negeri Sembilan","Pahang","Perak","Perlis","Pulau Pinang","Sabah","Sarawak","Selangor","Terengganu","W.P. Kuala Lumpur","W.P. Labuan","W.P. Putrajaya"];
+  var EAST = ["Sabah","Sarawak","W.P. Labuan"];
+  var STORE_KEY = "heetam_demo_customers";
+  var DEMO_CUSTOMER = {"0123456789":{name:"Contoh Pelanggan", email:"contoh@email.com", addr1:"No. 12, Jalan Kopi 3", addr2:"Taman Aroma", postcode:"47000", city:"Sungai Buloh", state:"Selangor"}};
+  var TICKER = ["Milk Chocolate","Nutty Caramel","Jasmine","Butterscotch","Dark Chocolate","Clove","Toasted Caramel","Cinnamon","Malt","Smoky Finish","Citrus Blossom","Strong Bold"];
+
+  var cart = [], lastOrder = null, filter = "all";
+
+  function $(s, r){ return (r||document).querySelector(s); }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+  function rm(n){ return "RM" + n.toFixed(2); }
+  function prod(id){ for (var i=0;i<PRODUCTS.length;i++) if (PRODUCTS[i].id===id) return PRODUCTS[i]; return null; }
+  function bagSrc(p){ return "img/" + p.id + "-bag.jpg"; }
+  function posterSrc(p){ return "img/" + p.id + "-poster.jpg"; }
+  function grindLabel(v){ for (var i=0;i<GRINDS.length;i++) if (GRINDS[i].v===v) return GRINDS[i].l; return v; }
+  function normPhone(p){ var d = String(p||"").replace(/\D/g,""); if (d.indexOf("60")===0) d = "0" + d.slice(2); return d; }
+  var toastTimer;
+  function toast(msg){ var t=$("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(function(){ t.classList.remove("show"); }, 2800); }
+  function loadCustomers(){
+    var out = {}, k;
+    for (k in DEMO_CUSTOMER) out[k] = DEMO_CUSTOMER[k];
+    try { var s = JSON.parse(localStorage.getItem(STORE_KEY) || "{}"); for (k in s) out[k] = s[k]; } catch(e){}
+    return out;
+  }
+  function saveCustomer(phone, data){
+    try { var s = JSON.parse(localStorage.getItem(STORE_KEY) || "{}"); s[phone] = data; localStorage.setItem(STORE_KEY, JSON.stringify(s)); } catch(e){}
+  }
+
+  /* ---------- Ticker ---------- */
+  var half = TICKER.map(function(t){ return esc(t) + "<i>●</i>"; }).join("");
+  $("#ticker").innerHTML = "<span>" + half + "</span><span>" + half + "</span>";
+
+  /* ---------- Grid ---------- */
+  function renderGrid(){
+    var html = "";
+    PRODUCTS.filter(function(p){ return filter==="all" || p.cat===filter; }).forEach(function(p){
+      html += '<article class="card">'+
+        '<button class="card-img" type="button" data-open="'+p.id+'" aria-label="Lihat '+esc(p.name)+'">'+
+          '<img src="'+bagSrc(p)+'" alt="Beg kopi Heetam '+esc(p.name)+'" loading="lazy" width="450" height="600">'+
+          (p.strong ? '<span class="badge strong">Strong Bold</span>' : '<span class="badge">'+esc(p.bean)+'</span>')+
+        '</button>'+
+        '<div class="card-body">'+
+          '<span class="tag">'+esc(p.tag)+'</span>'+
+          '<h3>'+esc(p.name)+'</h3>'+
+          '<span class="origin">'+esc(p.origin)+'</span>'+
+          '<p class="notes">'+esc(p.notes)+'</p>'+
+          '<span class="roast-pill">Roast · <b>'+esc(p.roast)+'</b></span>'+
+          '<div class="card-foot"><div class="prices"><span>500g <b>'+rm(p.price["500g"])+'</b></span><span>1kg <b>'+rm(p.price["1kg"])+'</b></span></div>'+
+          '<button class="btn gold" type="button" data-open="'+p.id+'">Pilih</button></div>'+
+        '</div></article>';
+    });
+    $("#grid").innerHTML = html;
+  }
+  function setFilter(f){
+    filter = f;
+    Array.prototype.forEach.call(document.querySelectorAll("#filters .chip"), function(c){ c.setAttribute("aria-pressed", c.getAttribute("data-filter")===f ? "true" : "false"); });
+    renderGrid();
+  }
+
+  /* ---------- Lapisan ---------- */
+  var stack = [];
+  function openLayer(el){
+    el._trigger = document.activeElement;
+    el.hidden = false;
+    document.documentElement.style.overflow = "hidden";
+    stack.push(el);
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ el.classList.add("open"); }); });
+    setTimeout(function(){ var f = el.querySelector(".sheet-body input, .drawer-panel button, input, button"); if (f) f.focus({preventScroll:true}); }, 60);
+  }
+  function closeLayer(el){
+    el.classList.remove("open");
+    stack = stack.filter(function(x){ return x!==el; });
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setTimeout(function(){
+      el.hidden = true;
+      if (!stack.length) document.documentElement.style.overflow = "";
+      if (el._trigger && el._trigger.focus && document.contains(el._trigger)) el._trigger.focus({preventScroll:true});
+    }, reduce ? 0 : 300);
+  }
+  document.addEventListener("keydown", function(e){ if (e.key==="Escape" && stack.length) closeLayer(stack[stack.length-1]); });
+  document.addEventListener("click", function(e){ var c = e.target.closest("[data-close]"); if (c){ var l = c.closest(".layer"); if (l) closeLayer(l); } });
+
+  /* ---------- Popup produk ---------- */
+  var sel = null;
+  function openSheet(id){
+    if (!prod(id)) return;
+    sel = {id:id, size:"500g", grind:"whole", qty:1};
+    renderSheet();
+    openLayer($("#sheet"));
+  }
+  function seg(name, opts, current){
+    return '<div class="seg">' + opts.map(function(o){
+      return '<div><input type="radio" name="'+name+'" id="'+name+'-'+o.v+'" value="'+o.v+'"'+(o.v===current?' checked':'')+'><label for="'+name+'-'+o.v+'"><b>'+o.l+'</b><span>'+o.d+'</span></label></div>';
+    }).join("") + '</div>';
+  }
+  function renderSheet(){
+    var p = prod(sel.id);
+    var sizes = [{v:"500g", l:"500g", d:rm(p.price["500g"])}, {v:"1kg", l:"1kg", d:rm(p.price["1kg"])}];
+    $("#sheet-panel").innerHTML =
+      '<button class="close-x" type="button" data-close aria-label="Tutup">×</button>'+
+      '<div class="sheet-img"><img src="'+posterSrc(p)+'" alt="Poster '+esc(p.name)+' Heetam Coffee" width="900" height="900"></div>'+
+      '<div class="sheet-body">'+
+        '<span class="tag">'+esc(p.tag)+' · '+esc(p.bean)+'</span>'+
+        '<h3 id="sheet-title">'+esc(p.name)+'</h3>'+
+        '<dl class="specs">'+
+          '<dt>Origin</dt><dd>'+esc(p.origin)+'</dd>'+
+          '<dt>Aroma</dt><dd>'+esc(p.aroma)+'</dd>'+
+          '<dt>Taste Note</dt><dd>'+esc(p.notes)+'</dd>'+
+          '<dt>Body</dt><dd>'+esc(p.body)+'</dd>'+
+          '<dt>Acidity</dt><dd>'+esc(p.acid)+'</dd>'+
+          '<dt>After Taste</dt><dd>'+esc(p.after)+'</dd>'+
+          '<dt>Roast</dt><dd>'+esc(p.roast)+'</dd>'+
+        '</dl>'+
+        '<div><span class="opt-label">Saiz</span>'+seg("size", sizes, sel.size)+'</div>'+
+        '<div><span class="opt-label">Kisaran</span>'+seg("grind", GRINDS, sel.grind)+'</div>'+
+        '<div class="sheet-row">'+
+          '<div><span class="opt-label">Kuantiti</span><div class="qty"><button type="button" data-sq="-1" aria-label="Kurang">−</button><output id="sq">1</output><button type="button" data-sq="1" aria-label="Tambah">+</button></div></div>'+
+          '<button class="btn gold" type="button" id="add-btn"></button>'+
+        '</div>'+
+      '</div>';
+    refreshSheet();
+  }
+  function refreshSheet(){
+    var p = prod(sel.id);
+    $("#sq").textContent = sel.qty;
+    $("#add-btn").textContent = "Add to Cart · " + rm(p.price[sel.size]*sel.qty);
+  }
+  $("#sheet").addEventListener("change", function(e){
+    if (e.target.name==="size"){ sel.size = e.target.value; refreshSheet(); }
+    if (e.target.name==="grind"){ sel.grind = e.target.value; }
+  });
+  $("#sheet").addEventListener("click", function(e){
+    var q = e.target.closest("[data-sq]");
+    if (q){ sel.qty = Math.max(1, Math.min(20, sel.qty + Number(q.getAttribute("data-sq")))); refreshSheet(); return; }
+    if (e.target.closest("#add-btn")){
+      addToCart(sel.id, sel.size, sel.grind, sel.qty);
+      closeLayer($("#sheet"));
+      setTimeout(openCart, 300);
+    }
+  });
+
+  /* ---------- Cart ---------- */
+  function addToCart(id, size, grind, qty){
+    var found = false;
+    cart.forEach(function(c){ if (c.id===id && c.size===size && c.grind===grind){ c.qty = Math.min(50, c.qty+qty); found = true; } });
+    if (!found) cart.push({id:id, size:size, grind:grind, qty:qty});
+    updateCount(true);
+  }
+  function totals(){
+    var sub = 0, kg = 0;
+    cart.forEach(function(c){ var p = prod(c.id); sub += p.price[c.size]*c.qty; kg += KG[c.size]*c.qty; });
+    var post = kg===0 ? 0 : (kg<=3 ? 10 : 10 + Math.ceil((kg-3)/3)*10);
+    return {sub:sub, kg:kg, post:post, total:sub+post};
+  }
+  function updateCount(bump){
+    $("#cart-count").textContent = cart.reduce(function(a,c){ return a+c.qty; }, 0);
+    if (bump){ var b = $("#cart-open"); b.classList.remove("bump"); void b.offsetWidth; b.classList.add("bump"); }
+  }
+  function kgLabel(kg){ return (kg % 1 === 0 ? kg.toFixed(0) : kg.toFixed(1)) + "kg"; }
+  function totalsHTML(t){
+    return '<div class="totals">'+
+      '<div><span>Subtotal</span><span class="num">'+rm(t.sub)+'</span></div>'+
+      '<div><span>Pos ('+kgLabel(t.kg)+')</span><span class="num">'+rm(t.post)+'</span></div>'+
+      '<div class="grand"><span>Jumlah</span><span class="num">'+rm(t.total)+'</span></div></div>';
+  }
+  function renderCart(){
+    if (!cart.length){
+      $("#cart-body").innerHTML = '<div class="empty"><p>Cart masih kosong. Pilih beans dulu.</p><button class="btn gold" type="button" id="go-shop">Shop Beans</button></div>';
+      $("#cart-foot").innerHTML = "";
+      return;
+    }
+    $("#cart-body").innerHTML = cart.map(function(c, i){
+      var p = prod(c.id);
+      return '<div class="line-item"><img src="'+bagSrc(p)+'" alt="" width="60" height="80">'+
+        '<div><div class="li-name">'+esc(p.name)+'</div><div class="li-meta">'+c.size+' · '+grindLabel(c.grind)+'</div>'+
+        '<div class="li-actions"><div class="qty"><button type="button" data-cq="'+i+'" data-d="-1" aria-label="Kurang">−</button><output>'+c.qty+'</output><button type="button" data-cq="'+i+'" data-d="1" aria-label="Tambah">+</button></div>'+
+        '<button class="link-btn" type="button" data-rm="'+i+'">Buang</button></div></div>'+
+        '<div class="li-price">'+rm(p.price[c.size]*c.qty)+'</div></div>';
+    }).join("");
+    $("#cart-foot").innerHTML = totalsHTML(totals()) +
+      '<p class="small">Pos RM10 sehingga 3kg. Lebih 3kg: +RM10 setiap 3kg (kadar contoh).</p>'+
+      '<button class="btn gold block" type="button" id="to-checkout">Checkout</button>';
+  }
+  function openCart(){ renderCart(); openLayer($("#cart")); }
+  $("#cart-open").addEventListener("click", openCart);
+  $("#cart").addEventListener("click", function(e){
+    var q = e.target.closest("[data-cq]");
+    if (q){ var i = Number(q.getAttribute("data-cq")); cart[i].qty += Number(q.getAttribute("data-d")); if (cart[i].qty<=0) cart.splice(i,1); updateCount(); renderCart(); return; }
+    var r = e.target.closest("[data-rm]");
+    if (r){ cart.splice(Number(r.getAttribute("data-rm")),1); updateCount(); renderCart(); return; }
+    if (e.target.closest("#go-shop")){ closeLayer($("#cart")); location.hash = "beans"; return; }
+    if (e.target.closest("#to-checkout")){ closeLayer($("#cart")); setTimeout(openCheckout, 300); }
+  });
+
+  /* ---------- Checkout ---------- */
+  function itemsHTML(){
+    return cart.map(function(c){
+      var p = prod(c.id);
+      return '<div class="sum-item"><img src="'+bagSrc(p)+'" alt="" width="44" height="58"><div><div class="li-name">'+esc(p.name)+' × '+c.qty+'</div><div class="li-meta">'+c.size+' · '+grindLabel(c.grind)+'</div></div><span class="li-price">'+rm(p.price[c.size]*c.qty)+'</span></div>';
+    }).join("");
+  }
+  function field(id, label, type, attrs, wide, optional){
+    return '<div class="field'+(wide?' wide':'')+'"><label for="'+id+'">'+label+(optional?' <span class="opt">(pilihan)</span>':'')+'</label>'+
+      '<input id="'+id+'" name="'+id+'" type="'+type+'" '+(attrs||'')+' aria-describedby="'+id+'-err"><span class="err" id="'+id+'-err"></span></div>';
+  }
+  function openCheckout(){
+    if (!cart.length){ toast("Cart kosong. Pilih beans dulu."); return; }
+    var t = totals();
+    var stateOpts = '<option value="">Pilih negeri</option>' + STATES.map(function(s){ return '<option>'+s+'</option>'; }).join("");
+    $("#co-view").innerHTML =
+      '<form id="co-form" class="co-grid" novalidate>'+
+        '<div>'+
+          '<h2>Checkout</h2>'+
+          '<fieldset><legend>1 · Maklumat Hubungan</legend>'+
+            '<div class="field wide"><label for="f-phone">No. telefon</label>'+
+              '<input id="f-phone" name="f-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="012-345 6789" aria-describedby="f-phone-hint f-phone-err">'+
+              '<span class="hint" id="f-phone-hint">Pernah order? Masukkan no. telefon, nama dan alamat akan diisi sendiri. (Demo: cuba 012-345 6789)</span>'+
+              '<span class="err" id="f-phone-err"></span></div>'+
+            '<div class="welcome" id="welcome" hidden></div>'+
+            field("f-name","Nama penuh penerima","text",'autocomplete="name"')+
+            field("f-email","Emel","email",'autocomplete="email" inputmode="email" placeholder="nama@gmail.com"')+
+          '</fieldset>'+
+          '<fieldset><legend>2 · Alamat Penghantaran</legend>'+
+            field("f-addr1","Alamat baris 1","text",'autocomplete="address-line1" placeholder="No. rumah, jalan"',true)+
+            field("f-addr2","Alamat baris 2","text",'autocomplete="address-line2" placeholder="Taman, kawasan"',true,true)+
+            field("f-postcode","Poskod","text",'autocomplete="postal-code" inputmode="numeric" maxlength="5" placeholder="47000"')+
+            field("f-city","Bandar","text",'autocomplete="address-level2"')+
+            '<div class="field wide"><label for="f-state">Negeri</label><select id="f-state" name="f-state" autocomplete="address-level1" aria-describedby="f-state-err">'+stateOpts+'</select><span class="err" id="f-state-err"></span></div>'+
+            '<div class="notice" id="east-note" hidden>Caj pos ke Sabah, Sarawak dan Labuan mungkin berbeza. Heetam akan sahkan sebelum pos.</div>'+
+          '</fieldset>'+
+          '<fieldset><legend>3 · Nota &amp; Promo</legend>'+
+            '<div class="field wide"><label for="f-note">Nota untuk penjual <span class="opt">(pilihan)</span></label><textarea id="f-note" name="f-note" rows="3" placeholder="Contoh: tinggal kat guard"></textarea></div>'+
+            '<label class="consent" for="f-consent"><input type="checkbox" id="f-consent" name="f-consent" checked><span>Saya setuju terima info beans baru dan promo melalui WhatsApp atau emel. Boleh berhenti bila-bila masa.</span></label>'+
+          '</fieldset>'+
+        '</div>'+
+        '<aside class="summary" aria-label="Ringkasan order"><h3>Ringkasan Order</h3>'+itemsHTML()+totalsHTML(t)+
+          '<button class="btn gold block" type="submit" id="pay-btn">Bayar '+rm(t.total)+' dengan CHIP</button>'+
+          '<div class="pay-methods"><span class="pay-chip">FPX</span><span class="pay-chip">DUITNOW QR</span><span class="pay-chip">E-WALLET</span><span class="pay-chip">KAD</span></div>'+
+          '<p class="small">Anda akan dibawa ke halaman bayaran CHIP yang selamat. (Demo: bayaran disimulasi.)</p>'+
+        '</aside>'+
+      '</form>';
+    openLayer($("#checkout"));
+    bindCheckout();
+  }
+  var V = {
+    "f-phone": function(v){ return /^01\d{8,9}$/.test(normPhone(v)) ? "" : "Masukkan no. telefon bermula 01, contoh 012-345 6789."; },
+    "f-name": function(v){ return v.trim().length>=3 ? "" : "Masukkan nama penuh penerima."; },
+    "f-email": function(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) ? "" : "Masukkan emel yang sah, contoh nama@gmail.com."; },
+    "f-addr1": function(v){ return v.trim().length>=5 ? "" : "Masukkan alamat rumah atau pejabat."; },
+    "f-postcode": function(v){ return /^\d{5}$/.test(v.trim()) ? "" : "Poskod mesti 5 digit."; },
+    "f-city": function(v){ return v.trim().length>=2 ? "" : "Masukkan bandar."; },
+    "f-state": function(v){ return v ? "" : "Pilih negeri."; }
+  };
+  function check(id){
+    var el = $("#"+id), msg = V[id](el.value);
+    $("#"+id+"-err").textContent = msg;
+    el.setAttribute("aria-invalid", msg ? "true" : "false");
+    return !msg;
+  }
+  var lookedUp = "";
+  function bindCheckout(){
+    lookedUp = "";
+    Object.keys(V).forEach(function(id){
+      var el = $("#"+id);
+      el.addEventListener("blur", function(){ if (el.value) check(id); });
+      el.addEventListener("input", function(){ if (el.getAttribute("aria-invalid")==="true") check(id); });
+    });
+    $("#f-phone").addEventListener("input", lookup);
+    $("#f-phone").addEventListener("blur", lookup);
+    $("#f-postcode").addEventListener("input", function(){ this.value = this.value.replace(/\D/g,"").slice(0,5); });
+    $("#f-state").addEventListener("change", function(){ $("#east-note").hidden = EAST.indexOf(this.value) < 0; check("f-state"); });
+    $("#co-form").addEventListener("submit", function(e){
+      e.preventDefault();
+      var bad = null;
+      Object.keys(V).forEach(function(id){ if (!check(id) && !bad) bad = $("#"+id); });
+      if (bad){ bad.focus(); toast("Sila lengkapkan maklumat yang bertanda merah."); return; }
+      var btn = $("#pay-btn"); btn.disabled = true; btn.textContent = "Menyambung ke CHIP…";
+      setTimeout(placeOrder, 1100);
+    });
+  }
+  function lookup(){
+    var ph = normPhone($("#f-phone").value);
+    if (!/^01\d{8,9}$/.test(ph) || ph===lookedUp) return;
+    var c = loadCustomers()[ph];
+    if (!c) return;
+    lookedUp = ph;
+    var map = {"f-name":c.name, "f-email":c.email, "f-addr1":c.addr1, "f-addr2":c.addr2, "f-postcode":c.postcode, "f-city":c.city, "f-state":c.state};
+    Object.keys(map).forEach(function(id){ var el = $("#"+id); if (el && !el.value && map[id]) el.value = map[id]; });
+    $("#east-note").hidden = EAST.indexOf(c.state) < 0;
+    var w = $("#welcome"); w.hidden = false;
+    w.innerHTML = "Selamat kembali, <b>"+esc(c.name.split(" ")[0])+"</b>! Alamat lepas dah diisi. Semak sekali lagi sebelum bayar.";
+  }
+  function placeOrder(){
+    var d = function(id){ return $("#"+id).value.trim(); };
+    var phone = normPhone(d("f-phone"));
+    var cust = {name:d("f-name"), email:d("f-email"), addr1:d("f-addr1"), addr2:d("f-addr2"), postcode:d("f-postcode"), city:d("f-city"), state:d("f-state")};
+    saveCustomer(phone, cust);
+    var now = new Date();
+    var ymd = String(now.getFullYear()).slice(2) + String(now.getMonth()+1).padStart(2,"0") + String(now.getDate()).padStart(2,"0");
+    var no = "HTM-" + ymd + "-" + String(Math.floor(1000 + Math.random()*9000));
+    var t = totals(), items = itemsHTML();
+    lastOrder = cart.map(function(c){ return {id:c.id, size:c.size, grind:c.grind, qty:c.qty}; });
+    var addr = esc(cust.addr1) + (cust.addr2 ? "<br>"+esc(cust.addr2) : "") + "<br>" + esc(cust.postcode) + " " + esc(cust.city) + ", " + esc(cust.state);
+    cart = []; updateCount();
+    $("#co-view").innerHTML =
+      '<div class="success">'+
+        '<div class="tick" aria-hidden="true">✓</div>'+
+        '<h2 tabindex="-1" id="ok-title">Terima Kasih, <span class="gold-text">'+esc(cust.name.split(" ")[0])+'!</span></h2>'+
+        '<p>Order <span class="order-no">'+no+'</span> diterima. Resit dihantar ke <b>'+esc(cust.email)+'</b>.</p>'+
+        '<div class="box"><p class="eyebrow">Ringkasan</p>'+items+
+          '<div class="totals"><div><span>Pos</span><span class="num">'+rm(t.post)+'</span></div><div class="grand"><span>Jumlah dibayar</span><span class="num">'+rm(t.total)+'</span></div></div></div>'+
+        '<div class="box"><p class="eyebrow">Dihantar kepada</p><p><b>'+esc(cust.name)+'</b> · '+esc(d("f-phone"))+'</p><p style="color:var(--muted)">'+addr+'</p></div>'+
+        '<p class="small">Heetam akan roast dan pos order anda. Tracking number akan dihantar melalui WhatsApp atau emel.</p>'+
+        '<div class="actions">'+
+          '<button class="btn gold" type="button" id="repeat">Order Lagi</button>'+
+          '<button class="btn" type="button" data-close>Kembali ke kedai</button>'+
+          '<button class="btn" type="button" id="wa-heetam">WhatsApp Heetam</button>'+
+        '</div>'+
+      '</div>';
+    $("#checkout").scrollTop = 0;
+    $("#ok-title").focus({preventScroll:true});
+  }
+  $("#checkout").addEventListener("click", function(e){
+    if (e.target.closest("#repeat") && lastOrder){
+      lastOrder.forEach(function(c){ addToCart(c.id, c.size, c.grind, c.qty); });
+      closeLayer($("#checkout"));
+      setTimeout(openCart, 300);
+    }
+    if (e.target.closest("#wa-heetam")) toast("Butang ini akan buka WhatsApp Heetam bila nombor dimasukkan.");
+  });
+
+  /* ---------- Lain-lain ---------- */
+  $("#grid").addEventListener("click", function(e){ var b = e.target.closest("[data-open]"); if (b) openSheet(b.getAttribute("data-open")); });
+  $("#filters").addEventListener("click", function(e){ var c = e.target.closest("[data-filter]"); if (c) setFilter(c.getAttribute("data-filter")); });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-jump]"), function(a){ a.addEventListener("click", function(){ setFilter(a.getAttribute("data-jump")); }); });
+  $("#fab").addEventListener("click", function(){ toast("Butang ini akan buka WhatsApp Heetam bila nombor dimasukkan."); });
+  $("#news-form").addEventListener("submit", function(e){
+    e.preventDefault();
+    var v = $("#news-email").value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)){ toast("Masukkan emel yang sah."); return; }
+    $("#news-email").value = ""; toast("Terima kasih! Emel anda disimpan (demo).");
+  });
+
+  renderGrid();
+})();
+</script>
+
+</body>
+</html>
