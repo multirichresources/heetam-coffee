@@ -3,9 +3,9 @@
    Ruang yang kosong tidak dipaparkan. */
 (function () {
   var CONTACT = {
-    address: "",  /* contoh: "No. X, Jalan Y, 47000 Sungai Buloh, Selangor" */
-    phone: "",    /* contoh: "012-345 6789" */
-    email: ""     /* contoh: "hello@heetamcoffroastery.com" */
+    address: "Lot Cafe A, MARA Halal Industrial Park, Jalan Batu Caves, 68100 Batu Caves, Selangor",  /* contoh: "No. X, Jalan Y, 47000 Sungai Buloh, Selangor" */
+    phone: "+60 13-922 6788",    /* contoh: "012-345 6789" */
+    email: "heetamcoff.roastery@gmail.com"     /* contoh: "hello@heetamcoffroastery.com" */
   };
   var LABEL = { address: "Alamat: ", phone: "Tel / WhatsApp: ", email: "Emel: " };
   var els = document.querySelectorAll("[data-contact]");
