@@ -228,7 +228,14 @@ async function handleAdmin(request, url, env) {
     const counts = {};
     const c = await env.DB.prepare("SELECT status, COUNT(*) n FROM orders GROUP BY status").all();
     for (const r of c.results) counts[r.status] = r.n;
-    return json({ ok: true, orders: results.map(o => ({ ...o, items: JSON.parse(o.items), token: undefined })), counts });
+    const my = new Date(Date.now() + 8 * 3600 * 1000);
+    const monthStart = new Date(Date.UTC(my.getUTCFullYear(), my.getUTCMonth(), 1) - 8 * 3600 * 1000).toISOString();
+    const dayStart = new Date(Date.UTC(my.getUTCFullYear(), my.getUTCMonth(), my.getUTCDate()) - 8 * 3600 * 1000).toISOString();
+    const sum = await env.DB.prepare(
+      "SELECT COALESCE(SUM(CASE WHEN paid_at >= ? THEN total END),0) month_total, COUNT(CASE WHEN paid_at >= ? THEN 1 END) month_orders, " +
+      "COALESCE(SUM(CASE WHEN paid_at >= ? THEN total END),0) day_total FROM orders WHERE status IN ('paid','shipped') AND is_test=0"
+    ).bind(monthStart, monthStart, dayStart).first();
+    return json({ ok: true, orders: results.map(o => ({ ...o, items: JSON.parse(o.items), token: undefined })), counts, summary: sum });
   }
 
   if (path === "/api/admin/ship" && request.method === "POST") {
