@@ -5,6 +5,8 @@
 //   CHIP_BRAND_ID, CHIP_SECRET_KEY, ADMIN_PASSWORD
 //   SPX_USER_ID, SPX_SECRET_KEY (untuk integrasi SPX kemudian)
 
+import * as EP from "./easyparcel.js";
+
 const CHIP_API = "https://gate.chip-in.asia/api/v1";
 
 // Harga dalam sen. Sumber kebenaran harga ialah di sini, bukan di browser.
@@ -336,6 +338,52 @@ async function handleAdmin(request, url, env) {
     return json({ ok: true });
   }
 
+  // ----- EasyParcel -----
+  if (path.startsWith("/api/admin/easyparcel")) {
+    const origin = url.origin;
+    let b = {};
+    if (request.method === "POST") { try { b = await request.json(); } catch {} }
+    if (path === "/api/admin/easyparcel" && request.method === "GET") return json({ ok: true, ...(await EP.status(env, origin)) });
+    if (path === "/api/admin/easyparcel/settings" && request.method === "POST") return json({ ok: true, settings: await EP.saveShipSettings(env, b) });
+    if (!EP.epConfigured(env)) return json({ ok: false, error: "EASYPARCEL_CLIENT_ID / EASYPARCEL_CLIENT_SECRET belum ditetapkan dalam Cloudflare." }, 503);
+    if (path === "/api/admin/easyparcel/connect" && request.method === "POST") return json({ ok: true, url: await EP.startConnect(env, origin) });
+    if (path === "/api/admin/easyparcel/disconnect" && request.method === "POST") { await EP.disconnect(env); return json({ ok: true }); }
+    const order = b.id ? await env.DB.prepare("SELECT * FROM orders WHERE id=?").bind(clean(b.id, 40)).first() : null;
+    if (!order) return json({ ok: false, error: "Order tidak dijumpai." }, 404);
+    try {
+      if (path === "/api/admin/easyparcel/quote" && request.method === "POST") {
+        if (order.status !== "paid") return json({ ok: false, error: "Hanya order Dibayar boleh dibooking." }, 400);
+        return json({ ok: true, quote: await EP.quote(env, origin, order) });
+      }
+      if (path === "/api/admin/easyparcel/book" && request.method === "POST") {
+        const serviceId = clean(b.service_id, 20);
+        if (!serviceId) return json({ ok: false, error: "Pilih kurier dulu." }, 400);
+        const claim = await env.DB.prepare("UPDATE orders SET ship_number='BOOKING' WHERE id=? AND status='paid' AND (ship_number IS NULL OR ship_number='')").bind(order.id).run();
+        if (!claim.meta || !claim.meta.changes) return json({ ok: false, error: "Order ini sudah dibooking atau bukan status Dibayar." }, 409);
+        let r;
+        try { r = await EP.book(env, origin, order, serviceId); }
+        catch (e) {
+          await env.DB.prepare("UPDATE orders SET ship_number=NULL WHERE id=? AND ship_number='BOOKING'").bind(order.id).run();
+          throw e;
+        }
+        await env.DB.prepare("UPDATE orders SET status='shipped', shipped_at=?, ship_number=?, ship_courier=?, ship_cost=?, awb_url=?, tracking=? WHERE id=?")
+          .bind(now(), r.ship_number, r.courier, r.cost_sen, r.awb_url || r.tracking_url, r.awb_number || r.ship_number, order.id).run();
+        return json({ ok: true, booking: r });
+      }
+      if (path === "/api/admin/easyparcel/refresh" && request.method === "POST") {
+        if (!order.ship_number || order.ship_number === "BOOKING") return json({ ok: false, error: "Order ini belum dibooking melalui EasyParcel." }, 400);
+        const d = await EP.details(env, origin, order.ship_number);
+        await env.DB.prepare("UPDATE orders SET tracking=COALESCE(?, tracking), awb_url=COALESCE(?, ?, awb_url) WHERE id=?")
+          .bind(d.awb_number, d.awb_url, d.tracking_url, order.id).run();
+        return json({ ok: true, details: d });
+      }
+    } catch (e) {
+      console.log("EasyParcel error", path, e && e.message);
+      return json({ ok: false, error: String(e && e.message || e).slice(0, 400) }, 502);
+    }
+    return json({ ok: false, error: "Not found" }, 404);
+  }
+
   // ----- Upload gambar -----
   if (path === "/api/admin/upload" && request.method === "POST") {
     if (!env.IMAGES) return json({ ok: false, error: "Storan gambar belum disambung." }, 503);
@@ -370,9 +418,14 @@ export default {
           chip_brand_id: Boolean(env.CHIP_BRAND_ID),
           chip_secret_key: Boolean(env.CHIP_SECRET_KEY),
           admin_password: Boolean(env.ADMIN_PASSWORD),
+          easyparcel_client: Boolean(env.EASYPARCEL_CLIENT_ID && env.EASYPARCEL_CLIENT_SECRET),
           spx_user_id: Boolean(env.SPX_USER_ID),
           spx_secret_key: Boolean(env.SPX_SECRET_KEY)
         });
+      }
+      if (p === EP.EP_REDIRECT_PATH && request.method === "GET") {
+        try { await EP.handleCallback(env, url); return Response.redirect(url.origin + "/admin?ep=ok", 302); }
+        catch (e) { return Response.redirect(url.origin + "/admin?ep=error&msg=" + encodeURIComponent(String(e.message || e).slice(0, 200)), 302); }
       }
       if (p === "/api/products" && request.method === "GET") {
         const { results } = await env.DB.prepare("SELECT * FROM products WHERE visible=1 ORDER BY sort, name").all();

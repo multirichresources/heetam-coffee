@@ -176,6 +176,25 @@ tr:last-child td{border-bottom:0}
 .lang button[aria-pressed=true]{background:var(--gold);color:var(--on-gold)}
 .login .lang{align-self:center}
 @media (max-width:560px){.modal .pbody{grid-template-columns:1fr}}
+/* Pos / EasyParcel */
+.ep-box{background:var(--panel-2);border:1px solid var(--line-2);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.ep-box .row{display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:14px}
+.ep-box select{width:100%;padding:8px 10px;border:1px solid var(--line-2);border-radius:8px;background:var(--bg);font-size:14px}
+.ep-box .hint{font-size:12.5px;color:var(--dim)}
+.or{display:flex;align-items:center;gap:8px;color:var(--dim);font-size:12px;margin:4px 0}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.shipgrid{display:grid;grid-template-columns:1fr 1.4fr;gap:16px;align-items:start}
+.card2{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.card2 h3{margin:0;font-size:16px}
+.card2 .big{font-family:var(--display);font-size:38px;line-height:1}
+.dot{display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:14px}
+.dot::before{content:"";width:9px;height:9px;border-radius:50%;background:currentColor}
+.dot.on{color:var(--ok)} .dot.off{color:var(--bad)}
+.sform{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.sform .full{grid-column:1/-1} .sform .two{grid-column:span 2}
+.sform input,.sform select{width:100%;padding:10px 12px;border:1px solid var(--line-2);border-radius:10px;background:var(--bg);font-size:15px}
+.awb{display:flex;gap:8px;flex-wrap:wrap}
+@media (max-width:860px){.shipgrid{grid-template-columns:1fr}.sform{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -225,6 +244,7 @@ tr:last-child td{border-bottom:0}
         <button type="button" data-st="customers" aria-pressed="false">Customer</button>
         <button type="button" data-st="products" aria-pressed="false">Produk</button>
         <button type="button" data-st="testimonials" aria-pressed="false">Testimoni</button>
+        <button type="button" data-st="shipping" aria-pressed="false">Pos</button>
       </div>
       <div class="tools">
         <label for="q" style="position:absolute;left:-9999px">Cari</label>
@@ -303,7 +323,22 @@ tr:last-child td{border-bottom:0}
     "Isi ayat testimoni atau upload gambar.":"Enter testimonial text or upload an image.", "Testimoni tidak dijumpai.":"Testimonial not found.",
     "Storan gambar belum disambung.":"Image storage is not connected.", "Format gambar mesti JPG, PNG atau WEBP.":"Image must be JPG, PNG or WEBP.",
     "Gambar kosong.":"Empty image.", "Gambar terlalu besar (maksimum 2MB).":"Image too large (max 2MB).", "Ralat server. Sila cuba lagi.":"Server error. Please try again.",
-    "Whole Bean":"Whole Bean", "Halus":"Ground"
+    "Whole Bean":"Whole Bean", "Halus":"Ground",
+    "Pos":"Shipping", "Semak Harga Pos":"Check Shipping Rate", "Menyemak harga…":"Checking rate…", "atau isi tracking sendiri":"or enter tracking manually",
+    "Semenanjung: SPX. Sabah/Sarawak/Labuan: kurier paling murah.":"Peninsular: SPX. Sabah/Sarawak/Labuan: cheapest courier.",
+    "SPX dipilih (Semenanjung).":"SPX selected (Peninsular).", "SPX tiada untuk poskod ini, kurier paling murah dipilih.":"SPX not available for this postcode, cheapest courier selected.",
+    "Kurier paling murah dipilih.":"Cheapest courier selected.", "Kurier":"Courier", "Tekan sekali lagi untuk sahkan":"Tap again to confirm", "Membooking…":"Booking…",
+    "Print AWB":"Print AWB", "Kemas kini AWB":"Update AWB", "AWB belum keluar. Cuba lagi sebentar.":"AWB not ready yet. Try again shortly.",
+    "Belum disediakan":"Not set up", "EASYPARCEL_CLIENT_ID dan EASYPARCEL_CLIENT_SECRET belum ada dalam Cloudflare.":"EASYPARCEL_CLIENT_ID and EASYPARCEL_CLIENT_SECRET are not set in Cloudflare.",
+    "Disambung":"Connected", "Baki kredit":"Credit balance", "Sambung semula":"Reconnect", "Putus sambungan":"Disconnect", "Belum disambung":"Not connected",
+    "Tekan butang di bawah, login EasyParcel, pilih akaun Live, kemudian Allow Access.":"Tap the button below, log in to EasyParcel, choose the Live account, then Allow Access.",
+    "Sambung EasyParcel":"Connect EasyParcel", "Tetapan parcel":"Parcel settings", "Berat 1 pack 500g (kg)":"Weight per 500g pack (kg)", "Berat 1 pack 1kg (kg)":"Weight per 1kg pack (kg)",
+    "Kurier utama":"Preferred courier", "Panjang kotak (cm)":"Box length (cm)", "Lebar kotak (cm)":"Box width (cm)", "Tinggi kotak (cm)":"Box height (cm)",
+    "Penghantar (alamat pickup)":"Sender (pickup address)", "Simpan tetapan":"Save settings", "Sambungan diputuskan.":"Disconnected.",
+    "EasyParcel berjaya disambung.":"EasyParcel connected.", "Sambungan EasyParcel gagal.":"EasyParcel connection failed.",
+    "Hanya order Dibayar boleh dibooking.":"Only Paid orders can be booked.", "Pilih kurier dulu.":"Choose a courier first.",
+    "Order ini sudah dibooking atau bukan status Dibayar.":"This order is already booked or not Paid.", "EasyParcel belum disambung.":"EasyParcel is not connected.",
+    "Order tidak dijumpai.":"Order not found."
   };
   var RX = [
     [/^(\d+) order dibayar$/, "$1 paid orders"],
@@ -316,7 +351,10 @@ tr:last-child td{border-bottom:0}
     [/^(.*) · Halus$/, "$1 · Ground"],
     [/^Status: (.*)$/, "Status: $1"],
     [/^(.+) ditandakan Dipos\.$/, "$1 marked as Shipped."],
-    [/^Ralat server \((\d+)\)\.$/, "Server error ($1)."]
+    [/^Ralat server \((\d+)\)\.$/, "Server error ($1)."],
+    [/^Sejak (.+)$/, "Since $1"], [/^\+ kredit percuma (.+)$/, "+ free credit $1"], [/^Kos pos EasyParcel: (.+)$/, "EasyParcel shipping cost: $1"],
+    [/^Book & Bayar (.+)$/, "Book & Pay $1"], [/^ · Berat ([\d.]+)kg\.$/, " · Weight $1kg."], [/^(.+) dibooking\. (.*)$/, "$1 booked. $2"],
+    [/^AWB akan keluar sebentar lagi\.$/, "AWB will be ready shortly."], [/^Berat ([\d.]+)kg$/, "Weight $1kg"]
   ];
   function T(str){
     if (LANG !== "en" || str == null) return str;
@@ -394,7 +432,10 @@ tr:last-child td{border-bottom:0}
   var products = [], testimonials = [];
   function load(){
     $("#list").innerHTML = '<div class="empty">Memuatkan…</div>';
-    $("#csv").hidden = (tab === "products" || tab === "testimonials");
+    $("#csv").hidden = (tab === "products" || tab === "testimonials" || tab === "shipping");
+    if (tab === "shipping"){
+      return api("/api/admin/easyparcel").then(function(j){ epStatus = j; render(); }).catch(function(e){ $("#list").innerHTML = '<div class="empty">'+esc(e.message)+'</div>'; });
+    }
     if (tab === "products"){
       return api("/api/admin/products").then(function(j){ products = j.products; render(); }).catch(function(e){ $("#list").innerHTML = '<div class="empty">'+esc(e.message)+'</div>'; });
     }
@@ -436,6 +477,7 @@ tr:last-child td{border-bottom:0}
   function render(){
     renderStats();
     if (tab === "products"){ renderProducts(); return; }
+    if (tab === "shipping"){ renderShipping(); return; }
     if (tab === "testimonials"){ renderTestimonials(); return; }
     if (tab === "customers"){
       var cs = customers.filter(matchQ);
@@ -454,9 +496,14 @@ tr:last-child td{border-bottom:0}
       }).join("");
       var ship;
       if (o.status === "paid"){
-        ship = '<label class="lbl" for="trk-'+esc(o.id)+'">No. tracking</label><input type="text" id="trk-'+esc(o.id)+'" placeholder="contoh SPXMY0123456789"><button class="btn sm gold" type="button" data-ship="'+esc(o.id)+'">Tandakan Dipos</button>';
+        var qd = quotes[o.id];
+        var epPart = '<div class="ep-box" id="ep-'+esc(o.id)+'">' + (qd ? quoteHTML(o.id, qd) :
+          '<div class="row"><b>EasyParcel</b><button class="btn sm gold" type="button" data-quote="'+esc(o.id)+'">Semak Harga Pos</button></div><span class="hint">Semenanjung: SPX. Sabah/Sarawak/Labuan: kurier paling murah.</span>') + '</div><div class="or">atau isi tracking sendiri</div>';
+        ship = epPart + '<label class="lbl" for="trk-'+esc(o.id)+'">No. tracking</label><input type="text" id="trk-'+esc(o.id)+'" placeholder="contoh SPXMY0123456789"><button class="btn sm gold" type="button" data-ship="'+esc(o.id)+'">Tandakan Dipos</button>';
       } else if (o.status === "shipped"){
-        ship = '<p class="lbl">Dipos</p><p class="done">'+dt(o.shipped_at)+'</p><p class="lbl" style="margin-top:6px">No. tracking</p><p class="trk">'+esc(o.tracking || "-")+'</p>';
+        ship = '<p class="lbl">Dipos</p><p class="done">'+dt(o.shipped_at)+(o.ship_courier ? ' · '+esc(o.ship_courier) : '')+'</p><p class="lbl" style="margin-top:6px">No. tracking</p><p class="trk">'+esc(o.tracking || "-")+'</p>'+
+          (o.ship_cost ? '<p class="muted">Kos pos EasyParcel: '+sen(o.ship_cost)+'</p>' : '')+
+          (o.ship_number && o.ship_number !== "BOOKING" ? '<div class="awb">'+(o.awb_url ? '<a class="btn sm gold" href="'+esc(o.awb_url)+'" target="_blank" rel="noopener">Print AWB</a>' : '')+'<button class="btn sm" type="button" data-awb="'+esc(o.id)+'">Kemas kini AWB</button></div>' : '');
       } else if (o.status === "pending"){
         ship = '<p class="lbl">Status</p><p class="muted">Customer belum selesai bayar di CHIP.</p><button class="btn sm" type="button" data-refresh="'+esc(o.id)+'">Semak dengan CHIP</button>';
       } else {
@@ -495,6 +542,35 @@ tr:last-child td{border-bottom:0}
     if (ep){ openProduct(products.filter(function(p){ return p.id === ep.getAttribute("data-editp"); })[0]); return; }
     var et = e.target.closest("[data-editt]");
     if (et){ openTesti(testimonials.filter(function(t){ return String(t.id) === et.getAttribute("data-editt"); })[0]); return; }
+    var qb = e.target.closest("[data-quote]");
+    if (qb){
+      var qid = qb.getAttribute("data-quote"); qb.disabled = true; qb.textContent = "Menyemak harga…";
+      api("/api/admin/easyparcel/quote", {method:"POST", body: JSON.stringify({id:qid})}).then(function(j){
+        quotes[qid] = j.quote; document.getElementById("ep-" + qid).innerHTML = quoteHTML(qid, j.quote);
+      }).catch(function(err){ qb.disabled = false; qb.textContent = "Semak Harga Pos"; toast(err.message); });
+      return;
+    }
+    var bb = e.target.closest("[data-book]");
+    if (bb){
+      var bid = bb.getAttribute("data-book"), sel = document.getElementById("svc-" + bid);
+      if (!bb.dataset.armed){ bb.dataset.armed = "1"; bb.textContent = "Tekan sekali lagi untuk sahkan"; setTimeout(function(){ if (bb.isConnected){ delete bb.dataset.armed; bb.textContent = bookLabel(bid); } }, 5000); return; }
+      bb.disabled = true; bb.textContent = "Membooking…";
+      api("/api/admin/easyparcel/book", {method:"POST", body: JSON.stringify({id:bid, service_id: sel.value})}).then(function(j){
+        delete quotes[bid];
+        toast(bid + " dibooking. " + (j.booking.awb_number ? "AWB: " + j.booking.awb_number : "AWB akan keluar sebentar lagi."));
+        load();
+      }).catch(function(err){ bb.disabled = false; delete bb.dataset.armed; bb.textContent = bookLabel(bid); toast(err.message); });
+      return;
+    }
+    var ab = e.target.closest("[data-awb]");
+    if (ab){
+      ab.disabled = true;
+      api("/api/admin/easyparcel/refresh", {method:"POST", body: JSON.stringify({id:ab.getAttribute("data-awb")})}).then(function(j){
+        toast(j.details.awb_number ? "AWB: " + j.details.awb_number : "AWB belum keluar. Cuba lagi sebentar.");
+        load();
+      }).catch(function(err){ ab.disabled = false; toast(err.message); });
+      return;
+    }
     var s = e.target.closest("[data-ship]");
     if (s){
       var id = s.getAttribute("data-ship"), trk = document.getElementById("trk-" + id).value.trim();
@@ -660,6 +736,66 @@ tr:last-child td{border-bottom:0}
     api(path, {method:"POST", body: JSON.stringify({id: editing.id})}).then(function(){ hideModal(); toast("Dipadam."); load(); }).catch(function(err){ toast(err.message); });
   });
 
+  /* ---------- Pos / EasyParcel ---------- */
+  var epStatus = null, quotes = {};
+  function rmf(n){ return "RM" + Number(n||0).toFixed(2); }
+  function bookLabel(id){ var sel = document.getElementById("svc-" + id); var q = quotes[id]; if (!q) return "Book"; var opt = q.options.filter(function(x){ return sel && x.service_id === sel.value; })[0] || q.chosen; return "Book & Bayar " + rmf(opt.price); }
+  function quoteHTML(id, q){
+    var opts = q.options.map(function(x){ return '<option value="'+esc(x.service_id)+'"'+(x.service_id===q.chosen.service_id?' selected':'')+'>'+esc(x.service || x.courier)+' · '+rmf(x.price)+'</option>'; }).join("");
+    var note = q.rule === "preferred" ? "SPX dipilih (Semenanjung)." : q.rule === "fallback" ? "SPX tiada untuk poskod ini, kurier paling murah dipilih." : "Kurier paling murah dipilih.";
+    return '<div class="row"><b>'+esc(q.chosen.courier)+'</b><span class="num">'+rmf(q.chosen.price)+'</span></div>'+
+      '<span class="hint">'+note+'</span><span class="hint">Berat '+q.weight+'kg</span>'+
+      '<label class="lbl" for="svc-'+esc(id)+'" style="margin:4px 0 0">Kurier</label><select id="svc-'+esc(id)+'" data-svc="'+esc(id)+'">'+opts+'</select>'+
+      '<button class="btn sm gold" type="button" data-book="'+esc(id)+'">Book & Bayar '+rmf(q.chosen.price)+'</button>';
+  }
+  document.addEventListener("change", function(e){
+    var sv = e.target.closest && e.target.closest("[data-svc]");
+    if (sv){ var b = document.querySelector('[data-book="'+sv.getAttribute("data-svc")+'"]'); if (b){ delete b.dataset.armed; b.textContent = bookLabel(sv.getAttribute("data-svc")); } }
+  });
+  var STATES = ["Johor","Kedah","Kelantan","Melaka","Negeri Sembilan","Pahang","Perak","Perlis","Pulau Pinang","Sabah","Sarawak","Selangor","Terengganu","W.P. Kuala Lumpur","W.P. Labuan","W.P. Putrajaya"];
+  function renderShipping(){
+    var st = epStatus || {}, ss = st.settings || {};
+    var conn = !st.configured
+      ? '<span class="dot off">Belum disediakan</span><p class="muted">EASYPARCEL_CLIENT_ID dan EASYPARCEL_CLIENT_SECRET belum ada dalam Cloudflare.</p>'
+      : st.connected
+        ? '<span class="dot on">Disambung</span><p class="muted">Sejak '+dt(st.connected_at)+'</p>'+
+          (st.error ? '<p class="err">'+esc(st.error)+'</p>' : '<div><div class="lbl">Baki kredit</div><div class="big">'+rmf(st.balance)+'</div>'+(st.free_credit ? '<p class="muted">+ kredit percuma '+rmf(st.free_credit)+'</p>' : '')+'</div>')+
+          '<div class="awb"><button class="btn sm" type="button" id="ep-connect">Sambung semula</button><button class="btn sm danger" type="button" id="ep-disconnect">Putus sambungan</button></div>'
+        : '<span class="dot off">Belum disambung</span><p class="muted">Tekan butang di bawah, login EasyParcel, pilih akaun Live, kemudian Allow Access.</p><button class="btn gold" type="button" id="ep-connect">Sambung EasyParcel</button>';
+    var f = function(id, label, val, cls, type){ return '<div class="field '+(cls||'')+'"><label for="'+id+'">'+label+'</label><input type="'+(type||'text')+'" id="'+id+'" value="'+esc(val==null?'':val)+'"'+(type==='number'?' step="0.01" min="0" inputmode="decimal"':'')+'></div>'; };
+    $("#list").innerHTML = '<div class="shipgrid">'+
+      '<section class="card2"><h3>EasyParcel</h3>'+conn+'</section>'+
+      '<form class="card2" id="ship-form"><h3>Tetapan parcel</h3><div class="sform">'+
+        f("s-w500","Berat 1 pack 500g (kg)",ss.w500,"","number")+f("s-w1kg","Berat 1 pack 1kg (kg)",ss.w1kg,"","number")+f("s-pref","Kurier utama",ss.preferred)+
+        f("s-len","Panjang kotak (cm)",ss.length,"","number")+f("s-wid","Lebar kotak (cm)",ss.width,"","number")+f("s-hei","Tinggi kotak (cm)",ss.height,"","number")+
+        '<p class="lbl full" style="margin:6px 0 0">Penghantar (alamat pickup)</p>'+
+        f("s-name","Nama",ss.sender_name,"two")+f("s-phone","Telefon",ss.sender_phone)+
+        f("s-addr1","Alamat 1",ss.sender_addr1,"full")+f("s-addr2","Alamat 2",ss.sender_addr2,"full")+
+        f("s-post","Poskod",ss.sender_postcode)+f("s-city","Bandar",ss.sender_city)+
+        '<div class="field"><label for="s-state">Negeri</label><select id="s-state">'+STATES.map(function(x){ return '<option'+(x===ss.sender_state?' selected':'')+'>'+x+'</option>'; }).join("")+'</select></div>'+
+        f("s-email","Emel",ss.sender_email,"full")+
+      '</div><div><button class="btn gold" type="submit">Simpan tetapan</button></div></form>'+
+    '</div>';
+  }
+  $("#list").addEventListener("submit", function(e){
+    if (e.target.id !== "ship-form") return;
+    e.preventDefault();
+    var v = function(id){ return document.getElementById(id).value.trim(); };
+    api("/api/admin/easyparcel/settings", {method:"POST", body: JSON.stringify({w500:v("s-w500"), w1kg:v("s-w1kg"), preferred:v("s-pref"), length:v("s-len"), width:v("s-wid"), height:v("s-hei"),
+      sender_name:v("s-name"), sender_phone:v("s-phone"), sender_addr1:v("s-addr1"), sender_addr2:v("s-addr2"), sender_postcode:v("s-post"), sender_city:v("s-city"), sender_state:v("s-state"), sender_email:v("s-email")})})
+      .then(function(j){ if (epStatus) epStatus.settings = j.settings; toast("Disimpan."); render(); }).catch(function(err){ toast(err.message); });
+  });
+  $("#list").addEventListener("click", function(e){
+    if (e.target.closest("#ep-connect")){
+      api("/api/admin/easyparcel/connect", {method:"POST", body:"{}"}).then(function(j){ location.href = j.url; }).catch(function(err){ toast(err.message); });
+    }
+    var d = e.target.closest("#ep-disconnect");
+    if (d){
+      if (!d.dataset.armed){ d.dataset.armed = "1"; d.textContent = "Tekan sekali lagi untuk sahkan"; return; }
+      api("/api/admin/easyparcel/disconnect", {method:"POST", body:"{}"}).then(function(){ toast("Sambungan diputuskan."); load(); }).catch(function(err){ toast(err.message); });
+    }
+  });
+
   function csvCell(v){ v = String(v==null?"":v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g,'""') + '"' : v; }
   $("#csv").addEventListener("click", function(){
     var rows;
@@ -683,6 +819,14 @@ tr:last-child td{border-bottom:0}
     document.body.appendChild(a); a.click(); a.remove();
   });
 
+  (function(){
+    var q = new URLSearchParams(location.search), r = q.get("ep");
+    if (!r) return;
+    tab = "shipping";
+    Array.prototype.forEach.call(document.querySelectorAll("#tabs button"), function(x){ x.setAttribute("aria-pressed", x.getAttribute("data-st")==="shipping" ? "true" : "false"); });
+    setTimeout(function(){ toast(r === "ok" ? "EasyParcel berjaya disambung." : (q.get("msg") || "Sambungan EasyParcel gagal.")); }, 400);
+    try { history.replaceState(null, "", location.pathname); } catch(e){}
+  })();
   if (pw){ showApp(); load(); } else { showLogin(); }
 })();
 </script>
