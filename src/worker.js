@@ -8,16 +8,28 @@
 const CHIP_API = "https://gate.chip-in.asia/api/v1";
 
 // Harga dalam sen. Sumber kebenaran harga ialah di sini, bukan di browser.
-const CATALOG = {
-  "ethiopia-bombe":     { name: "Ethiopia Bombe",     price: { "500g": 6500, "1kg": 9500 } },
-  "royal-indo":         { name: "Royal Indo",         price: { "500g": 5490, "1kg": 8500 } },
-  "brazil-parana":      { name: "Brazil Parana",      price: { "500g": 5990, "1kg": 8500 } },
-  "king-gayo":          { name: "King Gayo",          price: { "500g": 6500, "1kg": 9500 } },
-  "brazil-el-salvador": { name: "Brazil El-Salvador", price: { "500g": 5490, "1kg": 8500 } },
-  "cartel-papua":       { name: "Cartel Papua",       price: { "500g": 6500, "1kg": 8900 } },
-  "italian-mafia":      { name: "Italian Mafia",      price: { "500g": 5490, "1kg": 8500 } },
-  "test-order":         { name: "Test Order",         price: { "test": 100 }, test: true }
-};
+// Produk sebenar disimpan dalam jadual "products" (D1). Harga dalam sen.
+const TEST_ITEM = { name: "Test Order", price: { "test": 100 }, test: true };
+async function loadCatalog(env) {
+  const { results } = await env.DB.prepare("SELECT id, name, price500, price1kg FROM products WHERE visible=1").all();
+  const cat = { "test-order": TEST_ITEM };
+  for (const r of results) cat[r.id] = { name: r.name, price: { "500g": r.price500, "1kg": r.price1kg } };
+  return cat;
+}
+const PRODUCT_FIELDS = ["name","cat","tag","badge","origin","bean","aroma","notes","body","acid","after","roast","image"];
+function slugify(t) {
+  return String(t || "").toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40) || "produk";
+}
+function publicProduct(r) {
+  return { id: r.id, name: r.name, cat: r.cat, tag: r.tag, badge: r.badge, strong: Boolean(r.strong), origin: r.origin, bean: r.bean,
+    aroma: r.aroma, notes: r.notes, body: r.body, acid: r.acid, after: r.after, roast: r.roast, image: r.image,
+    price: { "500g": r.price500 / 100, "1kg": r.price1kg / 100 } };
+}
+async function deleteMedia(env, url) {
+  if (env.IMAGES && typeof url === "string" && url.startsWith("/media/")) {
+    try { await env.IMAGES.delete(url.slice(7)); } catch {}
+  }
+}
 const KG = { "500g": 0.5, "1kg": 1, "test": 0 };
 const GRINDS = { whole: "Whole Bean", fine: "Halus" };
 const STATES = ["Johor","Kedah","Kelantan","Melaka","Negeri Sembilan","Pahang","Perak","Perlis","Pulau Pinang","Sabah","Sarawak","Selangor","Terengganu","W.P. Kuala Lumpur","W.P. Labuan","W.P. Putrajaya"];
@@ -107,6 +119,7 @@ async function handleCheckout(request, env) {
 
   const raw = Array.isArray(b.items) ? b.items.slice(0, 30) : [];
   const items = [];
+  const CATALOG = await loadCatalog(env);
   let subtotal = 0, kg = 0, allTest = true;
   for (const it of raw) {
     const p = CATALOG[it && it.id];
@@ -252,6 +265,91 @@ async function handleAdmin(request, url, env) {
     return json({ ok: Boolean(o), status: o && o.status });
   }
 
+  // ----- Produk -----
+  if (path === "/api/admin/products" && request.method === "GET") {
+    const { results } = await env.DB.prepare("SELECT * FROM products ORDER BY sort, name").all();
+    return json({ ok: true, products: results });
+  }
+  if (path === "/api/admin/products" && request.method === "POST") {
+    let b = {}; try { b = await request.json(); } catch {}
+    const v = {};
+    for (const f of PRODUCT_FIELDS) v[f] = clean(b[f], f === "image" ? 300 : 200);
+    v.name = clean(b.name, 80);
+    const p500 = Math.round(parseFloat(b.price500) * 100), p1k = Math.round(parseFloat(b.price1kg) * 100);
+    if (v.name.length < 2) return json({ ok: false, error: "Nama produk wajib diisi." }, 400);
+    if (!(p500 > 0) || !(p1k > 0) || p500 > 1000000 || p1k > 1000000) return json({ ok: false, error: "Harga 500g dan 1kg wajib diisi dengan betul." }, 400);
+    if (v.image && !/^\/(media|img)\//.test(v.image)) return json({ ok: false, error: "Gambar tidak sah." }, 400);
+    const visible = b.visible ? 1 : 0, strong = b.strong ? 1 : 0;
+    const sort = Math.max(0, Math.min(9999, parseInt(b.sort, 10) || 100));
+    let id = clean(b.id, 60);
+    const existing = id ? await env.DB.prepare("SELECT image FROM products WHERE id=?").bind(id).first() : null;
+    if (!existing) {
+      const base = slugify(v.name); id = base;
+      for (let i = 2; await env.DB.prepare("SELECT 1 FROM products WHERE id=?").bind(id).first(); i++) id = base + "-" + i;
+      await env.DB.prepare("INSERT INTO products (id,name,cat,tag,badge,strong,origin,bean,aroma,notes,body,acid,after,roast,price500,price1kg,image,visible,sort,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+        .bind(id, v.name, v.cat, v.tag, v.badge, strong, v.origin, v.bean, v.aroma, v.notes, v.body, v.acid, v.after, v.roast, p500, p1k, v.image, visible, sort, now()).run();
+    } else {
+      await env.DB.prepare("UPDATE products SET name=?,cat=?,tag=?,badge=?,strong=?,origin=?,bean=?,aroma=?,notes=?,body=?,acid=?,after=?,roast=?,price500=?,price1kg=?,image=?,visible=?,sort=?,updated_at=? WHERE id=?")
+        .bind(v.name, v.cat, v.tag, v.badge, strong, v.origin, v.bean, v.aroma, v.notes, v.body, v.acid, v.after, v.roast, p500, p1k, v.image, visible, sort, now(), id).run();
+      if (existing.image && existing.image !== v.image) await deleteMedia(env, existing.image);
+    }
+    return json({ ok: true, id });
+  }
+  if (path === "/api/admin/products/delete" && request.method === "POST") {
+    let b = {}; try { b = await request.json(); } catch {}
+    const row = await env.DB.prepare("SELECT image FROM products WHERE id=?").bind(clean(b.id, 60)).first();
+    if (!row) return json({ ok: false, error: "Produk tidak dijumpai." }, 404);
+    await env.DB.prepare("DELETE FROM products WHERE id=?").bind(clean(b.id, 60)).run();
+    await deleteMedia(env, row.image);
+    return json({ ok: true });
+  }
+
+  // ----- Testimoni -----
+  if (path === "/api/admin/testimonials" && request.method === "GET") {
+    const { results } = await env.DB.prepare("SELECT * FROM testimonials ORDER BY sort, id DESC").all();
+    return json({ ok: true, testimonials: results });
+  }
+  if (path === "/api/admin/testimonials" && request.method === "POST") {
+    let b = {}; try { b = await request.json(); } catch {}
+    const name = clean(b.name, 60), location = clean(b.location, 60), text = clean(b.text, 800), image = clean(b.image, 300);
+    if (name.length < 2) return json({ ok: false, error: "Nama pelanggan wajib diisi." }, 400);
+    if (text.length < 5 && !image) return json({ ok: false, error: "Isi ayat testimoni atau upload gambar." }, 400);
+    if (image && !/^\/(media|img)\//.test(image)) return json({ ok: false, error: "Gambar tidak sah." }, 400);
+    const visible = b.visible ? 1 : 0, sort = Math.max(0, Math.min(9999, parseInt(b.sort, 10) || 100));
+    const id = parseInt(b.id, 10);
+    const existing = id ? await env.DB.prepare("SELECT image FROM testimonials WHERE id=?").bind(id).first() : null;
+    if (existing) {
+      await env.DB.prepare("UPDATE testimonials SET name=?,location=?,text=?,image=?,visible=?,sort=? WHERE id=?").bind(name, location, text, image, visible, sort, id).run();
+      if (existing.image && existing.image !== image) await deleteMedia(env, existing.image);
+      return json({ ok: true, id });
+    }
+    const r = await env.DB.prepare("INSERT INTO testimonials (name,location,text,image,visible,sort,created_at) VALUES (?,?,?,?,?,?,?)").bind(name, location, text, image, visible, sort, now()).run();
+    return json({ ok: true, id: r.meta && r.meta.last_row_id });
+  }
+  if (path === "/api/admin/testimonials/delete" && request.method === "POST") {
+    let b = {}; try { b = await request.json(); } catch {}
+    const id = parseInt(b.id, 10);
+    const row = await env.DB.prepare("SELECT image FROM testimonials WHERE id=?").bind(id).first();
+    if (!row) return json({ ok: false, error: "Testimoni tidak dijumpai." }, 404);
+    await env.DB.prepare("DELETE FROM testimonials WHERE id=?").bind(id).run();
+    await deleteMedia(env, row.image);
+    return json({ ok: true });
+  }
+
+  // ----- Upload gambar -----
+  if (path === "/api/admin/upload" && request.method === "POST") {
+    if (!env.IMAGES) return json({ ok: false, error: "Storan gambar belum disambung." }, 503);
+    const type = (request.headers.get("x-content-type") || "").toLowerCase();
+    if (!["image/jpeg", "image/png", "image/webp"].includes(type)) return json({ ok: false, error: "Format gambar mesti JPG, PNG atau WEBP." }, 400);
+    const buf = await request.arrayBuffer();
+    if (!buf.byteLength) return json({ ok: false, error: "Gambar kosong." }, 400);
+    if (buf.byteLength > 2 * 1024 * 1024) return json({ ok: false, error: "Gambar terlalu besar (maksimum 2MB)." }, 400);
+    const ext = type === "image/png" ? "png" : type === "image/webp" ? "webp" : "jpg";
+    const key = "u/" + Date.now().toString(36) + "-" + randomHex(6) + "." + ext;
+    await env.IMAGES.put(key, buf, { metadata: { type } });
+    return json({ ok: true, url: "/media/" + key });
+  }
+
   if (path === "/api/admin/customers" && request.method === "GET") {
     const { results } = await env.DB.prepare("SELECT phone, name, email, city, state, consent, order_count, created_at, updated_at FROM customers ORDER BY updated_at DESC LIMIT 2000").all();
     return json({ ok: true, customers: results });
@@ -275,6 +373,22 @@ export default {
           spx_user_id: Boolean(env.SPX_USER_ID),
           spx_secret_key: Boolean(env.SPX_SECRET_KEY)
         });
+      }
+      if (p === "/api/products" && request.method === "GET") {
+        const { results } = await env.DB.prepare("SELECT * FROM products WHERE visible=1 ORDER BY sort, name").all();
+        return json({ ok: true, products: results.map(publicProduct) });
+      }
+      if (p === "/api/testimonials" && request.method === "GET") {
+        const { results } = await env.DB.prepare("SELECT id, name, location, text, image FROM testimonials WHERE visible=1 ORDER BY sort, id DESC LIMIT 30").all();
+        return json({ ok: true, testimonials: results });
+      }
+      if (p.startsWith("/media/") && request.method === "GET") {
+        if (!env.IMAGES) return new Response("Not found", { status: 404 });
+        const key = decodeURIComponent(p.slice(7));
+        if (!/^u\/[a-z0-9-]+\.(jpg|png|webp)$/.test(key)) return new Response("Not found", { status: 404 });
+        const { value, metadata } = await env.IMAGES.getWithMetadata(key, { type: "arrayBuffer" });
+        if (!value) return new Response("Not found", { status: 404 });
+        return new Response(value, { headers: { "content-type": (metadata && metadata.type) || "image/jpeg", "cache-control": "public, max-age=31536000, immutable" } });
       }
       if (p === "/api/checkout" && request.method === "POST") return await handleCheckout(request, env);
       if (p === "/api/chip/callback" && request.method === "POST") return await handleCallback(request, env);

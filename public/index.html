@@ -77,15 +77,12 @@ main,footer,header{position:relative;z-index:2}
 .facts{display:flex;flex-wrap:wrap;gap:10px;margin-top:34px}
 .facts span{border:1px solid var(--line);background:rgba(27,21,15,.7);border-radius:40px;padding:6px 13px;font-size:12.5px;color:var(--muted)}
 .facts span b{color:var(--gold-hi);font-weight:600}
-.hero-art{position:relative;aspect-ratio:1/1.02;width:100%;max-width:540px;justify-self:center}
-.hero-art .bagimg{position:absolute;width:44%;aspect-ratio:3/4;object-fit:cover;border-radius:14px;box-shadow:0 30px 50px rgba(0,0,0,.6),0 0 0 1px rgba(243,205,116,.18)}
-.hero-art .b1{left:2%;top:22%;transform:rotate(-9deg);animation:float1 7s ease-in-out infinite}
-.hero-art .b3{right:2%;top:22%;transform:rotate(9deg);animation:float3 7.5s ease-in-out infinite}
-.hero-art .b2{left:28%;top:12%;width:46%;z-index:2;animation:float2 6s ease-in-out infinite}
-@keyframes float1{50%{transform:rotate(-9deg) translateY(-10px)}}
-@keyframes float2{50%{transform:translateY(-14px)}}
-@keyframes float3{50%{transform:rotate(9deg) translateY(-8px)}}
-.steam{position:absolute;left:30%;top:-6%;width:40%;height:34%;z-index:3;pointer-events:none}
+.hero-art{position:relative;width:100%;max-width:620px;justify-self:center;aspect-ratio:4/3}
+.hero-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:22px;
+  -webkit-mask-image:radial-gradient(ellipse 75% 72% at 55% 52%,#000 58%,transparent 100%);mask-image:radial-gradient(ellipse 75% 72% at 55% 52%,#000 58%,transparent 100%);
+  animation:heroIn 1.4s ease-out both}
+@keyframes heroIn{from{opacity:0;transform:scale(1.04)}to{opacity:1;transform:none}}
+.steam{position:absolute;left:var(--steam-x,37%);top:var(--steam-y,-12%);width:26%;height:40%;z-index:3;pointer-events:none}
 .steam path{fill:none;stroke:rgba(255,244,226,.55);stroke-width:7;stroke-linecap:round;filter:blur(5px);opacity:0;animation:rise 5.5s ease-in-out infinite}
 .steam path:nth-child(2){animation-delay:1.8s}
 .steam path:nth-child(3){animation-delay:3.6s}
@@ -120,7 +117,7 @@ main,footer,header{position:relative;z-index:2}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:22px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;display:flex;flex-direction:column;overflow:hidden;min-width:0;transition:transform .3s,border-color .3s,box-shadow .3s}
 .card:hover{transform:translateY(-6px);border-color:var(--gold-deep);box-shadow:0 22px 40px rgba(0,0,0,.45),0 0 0 1px rgba(217,164,65,.25)}
-.card-img{position:relative;display:block;width:100%;padding:0;border:0;background:var(--bg);cursor:pointer;aspect-ratio:3/4;overflow:hidden}
+.card-img{position:relative;display:block;width:100%;padding:0;border:0;background:var(--bg);cursor:pointer;aspect-ratio:1/1;overflow:hidden}
 .card-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
 .card:hover .card-img img{transform:scale(1.06)}
 .card-img .badge{position:absolute;left:12px;top:12px;background:rgba(13,10,7,.82);border:1px solid var(--gold-deep);color:var(--gold-hi);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:5px 10px;border-radius:30px}
@@ -164,8 +161,13 @@ main,footer,header{position:relative;z-index:2}
 
 /* Testimoni */
 .reviews{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.review-slot{border:1.5px dashed var(--line);border-radius:16px;padding:26px;min-height:180px;display:flex;flex-direction:column;justify-content:space-between;gap:14px;color:var(--muted)}
-.review-slot .stars{color:var(--gold);letter-spacing:4px}
+.review{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.review .stars{color:var(--gold);letter-spacing:4px}
+.review .quote{font-size:15.5px;line-height:1.65;margin:0}
+.review .who{margin-top:auto;display:flex;flex-direction:column;font-size:14px}
+.review .who b{color:var(--ink)}
+.review .who span{color:var(--muted);font-size:13px}
+.review img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:12px;background:var(--bg)}
 @media (max-width:820px){.reviews{grid-template-columns:1fr}}
 
 /* Footer */
@@ -345,15 +347,13 @@ legend{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:upperc
         </div>
       </div>
       <div class="hero-art" aria-hidden="true">
+        <img class="hero-photo" src="img/hero.jpg" alt="" width="1600" height="1200" fetchpriority="high">
         <svg class="steam" viewBox="0 0 200 160" preserveAspectRatio="none">
           <path d="M70 160 C 50 120, 95 100, 75 60 S 90 10, 80 0"/>
           <path d="M100 160 C 120 125, 80 95, 104 58 S 92 14, 106 0"/>
           <path d="M130 160 C 112 122, 150 98, 128 62 S 140 16, 126 0"/>
         </svg>
-        <img class="bagimg b1" src="img/ethiopia-bombe-bag.jpg" alt="">
-        <img class="bagimg b3" src="img/king-gayo-bag.jpg" alt="">
-        <img class="bagimg b2" src="img/italian-mafia-bag.jpg" alt="">
-        <div class="hero-badge"><span class="script">Roast to Perfection</span><small>7 pilihan beans · 500g &amp; 1kg</small></div>
+        <div class="hero-badge"><span class="script">Roast to Perfection</span><small id="hero-count">Pilihan beans · 500g &amp; 1kg</small></div>
       </div>
     </div>
   </section>
@@ -367,13 +367,7 @@ legend{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:upperc
           <p class="eyebrow">Our Beans</p>
           <h2 class="h2">Pilih Ikut <span class="gold-text">Selera Anda</span></h2>
         </div>
-        <div class="filters" role="group" aria-label="Tapis beans" id="filters">
-          <button class="chip" type="button" data-filter="all" aria-pressed="true">Semua</button>
-          <button class="chip" type="button" data-filter="Single Origin" aria-pressed="false">Single Origin</button>
-          <button class="chip" type="button" data-filter="Barista Blend" aria-pressed="false">Barista Blend</button>
-          <button class="chip" type="button" data-filter="House Blend" aria-pressed="false">House Blend</button>
-          <button class="chip" type="button" data-filter="Specialty" aria-pressed="false">Specialty</button>
-        </div>
+        <div class="filters" role="group" aria-label="Tapis beans" id="filters"></div>
       </div>
       <div class="grid" id="grid"></div>
     </div>
@@ -416,13 +410,10 @@ legend{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:upperc
     </div>
   </section>
 
-  <section class="section tint" id="testimoni">
+  <section class="section tint" id="testimoni" hidden>
     <div class="wrap">
       <div class="section-head"><div><p class="eyebrow">Kata Pelanggan</p><h2 class="h2">Testimoni</h2></div></div>
-      <div class="reviews">
-        <div class="review-slot"><span class="stars">★★★★★</span><p>Ruang testimoni #1. Letak gambar dan ayat sebenar pelanggan Heetam di sini.</p></div>
-        <div class="review-slot"><span class="stars">★★★★★</span><p>Ruang testimoni #2. Screenshot WhatsApp pun boleh, dengan izin pelanggan.</p></div>
-        <div class="review-slot"><span class="stars">★★★★★</span><p>Ruang testimoni #3.</p></div>
+      <div class="reviews" id="reviews">
       </div>
     </div>
   </section>
@@ -500,14 +491,15 @@ legend{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:upperc
   "use strict";
 
   /* ---------- Produk Heetam (ikut poster) ---------- */
+  /* Senarai awal; diganti dengan data terkini dari /api/products bila page dibuka. */
   var PRODUCTS = [
-    {id:"ethiopia-bombe", name:"Ethiopia Bombe", cat:"Specialty", tag:"Specialty", origin:"Ethiopia & Brazil", bean:"100% Arabica", aroma:"Strong, Floral", notes:"Milk Chocolate, Nutty Caramel, Jasmine", body:"Full & Rounded", acid:"Bright", after:"Strong", roast:"Medium Dark", price:{"500g":65,"1kg":95}},
-    {id:"royal-indo", name:"Royal Indo", cat:"Barista Blend", tag:"Barista Blend", origin:"Java Indonesia & Brazil", bean:"100% Arabica", aroma:"Strong, Sugar Browning, Hints of Citrus Blossom", notes:"Herbs Spices, Malt, Chocolate, Smoky Finish", body:"Full & Rounded", acid:"Bright", after:"Strong", roast:"Medium Dark", price:{"500g":54.9,"1kg":85}},
-    {id:"brazil-parana", name:"Brazil Parana", cat:"Single Origin", tag:"Single Origin", origin:"Brazil · Natural Process", bean:"100% Arabica", aroma:"Toasted Nut, Chocolate, Cinnamon", notes:"Toasted Nut, Chocolate, Cinnamon", body:"Full & Rounded", acid:"Bright", after:"Strong", roast:"Medium Dark", price:{"500g":59.9,"1kg":85}},
-    {id:"king-gayo", name:"King Gayo", cat:"Barista Blend", tag:"Barista Blend", origin:"Indonesia Sumatera", bean:"100% Arabica", aroma:"Strong, Floral", notes:"Butterscotch, Dark Chocolate, Clove, Nutty", body:"Full & Rounded", acid:"Bright", after:"Strong", roast:"Medium Dark", price:{"500g":65,"1kg":95}},
-    {id:"brazil-el-salvador", name:"Brazil El-Salvador", cat:"House Blend", tag:"House Blend", origin:"Brazil, El Salvador", bean:"100% Arabica", aroma:"Toasted Caramel", notes:"Dark Chocolate, Toasted Caramel", body:"Full & Rounded", acid:"Bright", after:"Strong", roast:"Medium Dark", price:{"500g":54.9,"1kg":85}},
-    {id:"cartel-papua", name:"Cartel Papua", cat:"Barista Blend", tag:"Cafe Blend", origin:"Brazil Samba, Papua New Guinea Korofeigu", bean:"100% Arabica", aroma:"Toasted Caramel", notes:"Dark Chocolate, Toasted Caramel", body:"Full & Rounded", acid:"Bright", after:"Strong", roast:"Medium Dark", price:{"500g":65,"1kg":89}},
-    {id:"italian-mafia", name:"Italian Mafia", cat:"House Blend", tag:"House Blend", strong:true, origin:"Brazil & Java", bean:"60% Arabica · 40% Robusta", aroma:"Strong & Bold", notes:"Robust, Sweet but Charred Flavor", body:"Full & Rounded", acid:"Bright", after:"Strong, Sweet but Charred", roast:"Dark", price:{"500g":54.9,"1kg":85}}
+    {id:"ethiopia-bombe", image:"img/ethiopia-bombe-poster.jpg", badge:"100% Arabica", name:"Ethiopia Bombe", cat:"Specialty", tag:"Specialty", origin:"Ethiopia & Brazil", bean:"100% Arabica", aroma:"Strong, Floral", notes:"Milk Chocolate, Nutty Caramel, Jasmine", body:"Full & Rounded", acid:"Bright", after:"Strong", roast:"Medium Dark", price:{"500g":65,"1kg":95}},
+    {id:"royal-indo", image:"img/royal-indo-poster.jpg", badge:"100% Arabica", name:"Royal Indo", cat:"Barista Blend", tag:"Barista Blend", origin:"Java Indonesia & Brazil", bean:"100% Arabica", aroma:"Strong, Sugar Browning, Hints of Citrus Blossom", notes:"Herbs Spices, Malt, Chocolate, Smoky Finish", body:"Full & Rounded", acid:"Bright", after:"Strong", roast:"Medium Dark", price:{"500g":54.9,"1kg":85}},
+    {id:"brazil-parana", image:"img/brazil-parana-poster.jpg", badge:"100% Arabica", name:"Brazil Parana", cat:"Single Origin", tag:"Single Origin", origin:"Brazil · Natural Process", bean:"100% Arabica", aroma:"Toasted Nut, Chocolate, Cinnamon", notes:"Toasted Nut, Chocolate, Cinnamon", body:"Full & Rounded", acid:"Bright", after:"Strong", roast:"Medium Dark", price:{"500g":59.9,"1kg":85}},
+    {id:"king-gayo", image:"img/king-gayo-poster.jpg", badge:"100% Arabica", name:"King Gayo", cat:"Barista Blend", tag:"Barista Blend", origin:"Indonesia Sumatera", bean:"100% Arabica", aroma:"Strong, Floral", notes:"Butterscotch, Dark Chocolate, Clove, Nutty", body:"Full & Rounded", acid:"Bright", after:"Strong", roast:"Medium Dark", price:{"500g":65,"1kg":95}},
+    {id:"brazil-el-salvador", image:"img/brazil-el-salvador-poster.jpg", badge:"100% Arabica", name:"Brazil El-Salvador", cat:"House Blend", tag:"House Blend", origin:"Brazil, El Salvador", bean:"100% Arabica", aroma:"Toasted Caramel", notes:"Dark Chocolate, Toasted Caramel", body:"Full & Rounded", acid:"Bright", after:"Strong", roast:"Medium Dark", price:{"500g":54.9,"1kg":85}},
+    {id:"cartel-papua", image:"img/cartel-papua-poster.jpg", badge:"100% Arabica", name:"Cartel Papua", cat:"Barista Blend", tag:"Cafe Blend", origin:"Brazil Samba, Papua New Guinea Korofeigu", bean:"100% Arabica", aroma:"Toasted Caramel", notes:"Dark Chocolate, Toasted Caramel", body:"Full & Rounded", acid:"Bright", after:"Strong", roast:"Medium Dark", price:{"500g":65,"1kg":89}},
+    {id:"italian-mafia", image:"img/italian-mafia-poster.jpg", badge:"Strong Bold", name:"Italian Mafia", cat:"House Blend", tag:"House Blend", strong:true, origin:"Brazil & Java", bean:"60% Arabica · 40% Robusta", aroma:"Strong & Bold", notes:"Robust, Sweet but Charred Flavor", body:"Full & Rounded", acid:"Bright", after:"Strong, Sweet but Charred", roast:"Dark", price:{"500g":54.9,"1kg":85}}
   ];
   var GRINDS = [{v:"whole", l:"Whole Bean", d:"Biji penuh"}, {v:"fine", l:"Halus", d:"Ground"}];
   var KG = {"500g":0.5, "1kg":1, "test":0};
@@ -527,8 +519,8 @@ legend{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:upperc
   function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
   function rm(n){ return "RM" + n.toFixed(2); }
   function prod(id){ for (var i=0;i<PRODUCTS.length;i++) if (PRODUCTS[i].id===id) return PRODUCTS[i]; return null; }
-  function bagSrc(p){ return p.img || ("img/" + p.id + "-bag.jpg"); }
-  function posterSrc(p){ return "img/" + p.id + "-poster.jpg"; }
+  function bagSrc(p){ return p.img || p.image || "img/logo.png"; }
+  function posterSrc(p){ return bagSrc(p); }
   function metaLabel(c){ return c.id==="test-order" ? "Test" : c.size + " · " + grindLabel(c.grind); }
   function grindLabel(v){ for (var i=0;i<GRINDS.length;i++) if (GRINDS[i].v===v) return GRINDS[i].l; return v; }
   function normPhone(p){ var d = String(p||"").replace(/\D/g,""); if (d.indexOf("60")===0) d = "0" + d.slice(2); return d; }
@@ -554,8 +546,8 @@ legend{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:upperc
     PRODUCTS.filter(function(p){ return !p.hidden && (filter==="all" || p.cat===filter); }).forEach(function(p){
       html += '<article class="card">'+
         '<button class="card-img" type="button" data-open="'+p.id+'" aria-label="Lihat '+esc(p.name)+'">'+
-          '<img src="'+bagSrc(p)+'" alt="Beg kopi Heetam '+esc(p.name)+'" loading="lazy" width="450" height="600">'+
-          (p.strong ? '<span class="badge strong">Strong Bold</span>' : '<span class="badge">'+esc(p.bean)+'</span>')+
+          '<img src="'+esc(bagSrc(p))+'" alt="Heetam Coffee '+esc(p.name)+'" loading="lazy" width="600" height="600">'+
+          (p.badge ? '<span class="badge'+(p.strong?' strong':'')+'">'+esc(p.badge)+'</span>' : '')+
         '</button>'+
         '<div class="card-body">'+
           '<span class="tag">'+esc(p.tag)+'</span>'+
@@ -567,7 +559,26 @@ legend{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:upperc
           '<button class="btn gold" type="button" data-open="'+p.id+'">Pilih</button></div>'+
         '</div></article>';
     });
-    $("#grid").innerHTML = html;
+    $("#grid").innerHTML = html || '<p class="small">Tiada beans dalam kategori ini.</p>';
+  }
+  function renderFilters(){
+    var cats = [];
+    PRODUCTS.forEach(function(p){ if (!p.hidden && p.cat && cats.indexOf(p.cat) < 0) cats.push(p.cat); });
+    if (filter !== "all" && cats.indexOf(filter) < 0) filter = "all";
+    $("#filters").innerHTML = ['all'].concat(cats).map(function(c){
+      return '<button class="chip" type="button" data-filter="'+esc(c)+'" aria-pressed="'+(c===filter)+'">'+(c==="all"?"Semua":esc(c))+'</button>';
+    }).join("");
+    var n = PRODUCTS.filter(function(p){ return !p.hidden; }).length;
+    var hc = $("#hero-count"); if (hc) hc.textContent = n + " pilihan beans · 500g & 1kg";
+  }
+  function renderReviews(list){
+    if (!list || !list.length){ $("#testimoni").hidden = true; return; }
+    $("#reviews").innerHTML = list.map(function(t){
+      return '<article class="review">'+(t.image ? '<img src="'+esc(t.image)+'" alt="Testimoni '+esc(t.name)+'" loading="lazy" width="600" height="600">' : '')+
+        '<span class="stars" aria-label="5 bintang">★★★★★</span>'+(t.text ? '<p class="quote">'+esc(t.text)+'</p>' : '')+
+        '<div class="who"><b>'+esc(t.name)+'</b>'+(t.location ? '<span>'+esc(t.location)+'</span>' : '')+'</div></article>';
+    }).join("");
+    $("#testimoni").hidden = false;
   }
   function setFilter(f){
     filter = f;
@@ -616,7 +627,7 @@ legend{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:upperc
     var sizes = [{v:"500g", l:"500g", d:rm(p.price["500g"])}, {v:"1kg", l:"1kg", d:rm(p.price["1kg"])}];
     $("#sheet-panel").innerHTML =
       '<button class="close-x" type="button" data-close aria-label="Tutup">×</button>'+
-      '<div class="sheet-img"><img src="'+posterSrc(p)+'" alt="Poster '+esc(p.name)+' Heetam Coffee" width="900" height="900"></div>'+
+      '<div class="sheet-img"><img src="'+esc(posterSrc(p))+'" alt="Heetam Coffee '+esc(p.name)+'" width="900" height="900"></div>'+
       '<div class="sheet-body">'+
         '<span class="tag">'+esc(p.tag)+' · '+esc(p.bean)+'</span>'+
         '<h3 id="sheet-title">'+esc(p.name)+'</h3>'+
@@ -900,7 +911,17 @@ legend{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:upperc
     $("#news-email").value = ""; toast("Terima kasih! Emel anda disimpan (demo).");
   });
 
+  renderFilters();
   renderGrid();
+  fetch("/api/products").then(function(r){ return r.json(); }).then(function(j){
+    if (!j.ok || !j.products) return;
+    var test = prod("test-order");
+    PRODUCTS = j.products.concat(test ? [test] : []);
+    cart = cart.filter(function(c){ var p = prod(c.id); return p && p.price[c.size]; });
+    updateCount();
+    renderFilters(); renderGrid();
+  }).catch(function(){});
+  fetch("/api/testimonials").then(function(r){ return r.json(); }).then(function(j){ if (j.ok) renderReviews(j.testimonials); }).catch(function(){});
   if (TEST_MODE){
     var tb = document.createElement("button");
     tb.type = "button"; tb.className = "btn"; tb.textContent = "Tambah Test Order RM1.00";

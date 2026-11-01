@@ -131,6 +131,47 @@ tr:last-child td{border-bottom:0}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,10px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:30px;font-size:14px;font-weight:500;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;z-index:20}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* Produk & testimoni */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.pcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.pcard img{width:100%;aspect-ratio:1/1;object-fit:cover;background:var(--bg);display:block}
+.pcard .noimg{width:100%;aspect-ratio:1/1;display:grid;place-items:center;color:var(--dim);background:var(--bg);font-size:13px}
+.pcard .pb{padding:12px 14px;display:flex;flex-direction:column;gap:4px;flex:1}
+.pcard .pn{font-weight:700}
+.pcard .pc{color:var(--muted);font-size:13px}
+.pcard .pp{font-variant-numeric:tabular-nums;font-size:13.5px;margin-top:2px}
+.pcard .pa{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:10px 14px;border-top:1px solid var(--line)}
+.pcard.off{opacity:.55}
+.vis{font-size:12px;font-weight:700}
+.vis.on{color:var(--ok)} .vis.off{color:var(--dim)}
+.addbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.addbar p{margin:0;color:var(--muted);font-size:13.5px}
+.tlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.tcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.tcard img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px}
+.tcard q{font-size:14px;color:var(--ink)}
+.tcard .tw{color:var(--muted);font-size:13px}
+/* Borang edit */
+.modal{position:fixed;inset:0;z-index:30;display:flex;justify-content:flex-end}
+.modal .scrim{position:absolute;inset:0;background:rgba(0,0,0,.6)}
+.modal .panel{position:relative;width:min(560px,100%);height:100%;background:var(--panel);border-left:1px solid var(--line);display:flex;flex-direction:column}
+.modal .ph{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line)}
+.modal .ph h2{font-family:var(--display);font-weight:400;font-size:28px;margin:0;letter-spacing:.02em}
+.modal .pbody{flex:1;overflow:auto;padding:18px 20px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.modal .pbody .full{grid-column:1/-1}
+.modal .pf{display:flex;justify-content:space-between;gap:10px;padding:14px 20px;border-top:1px solid var(--line);padding-bottom:calc(14px + env(safe-area-inset-bottom,0px))}
+.modal input[type=text],.modal input[type=number],.modal textarea,.modal select{width:100%;padding:10px 12px;border:1px solid var(--line-2);border-radius:10px;background:var(--bg);font-size:15px}
+.modal textarea{resize:vertical;min-height:90px}
+.modal .hint{font-size:12.5px;color:var(--dim)}
+.imgpick{display:flex;gap:14px;align-items:center}
+.imgpick .prev{width:120px;height:120px;border-radius:12px;background:var(--bg);border:1px dashed var(--line-2);object-fit:cover;flex:0 0 auto;display:grid;place-items:center;color:var(--dim);font-size:12px;overflow:hidden}
+.imgpick .prev img{width:100%;height:100%;object-fit:cover}
+.imgpick .acts{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.check{display:flex;align-items:center;gap:10px;font-weight:600;font-size:14px}
+.check input{width:18px;height:18px;accent-color:var(--gold)}
+.btn.danger{border-color:rgba(238,125,114,.5);color:var(--bad);background:transparent}
+.btn.danger:hover{border-color:var(--bad)}
+@media (max-width:560px){.modal .pbody{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -176,6 +217,8 @@ tr:last-child td{border-bottom:0}
         <button type="button" data-st="failed" aria-pressed="false">Gagal <span class="n" data-count="failed">0</span></button>
         <button type="button" data-st="all" aria-pressed="false">Semua</button>
         <button type="button" data-st="customers" aria-pressed="false">Customer</button>
+        <button type="button" data-st="products" aria-pressed="false">Produk</button>
+        <button type="button" data-st="testimonials" aria-pressed="false">Testimoni</button>
       </div>
       <div class="tools">
         <label for="q" style="position:absolute;left:-9999px">Cari</label>
@@ -187,6 +230,16 @@ tr:last-child td{border-bottom:0}
     <div id="list" class="list"></div>
   </main>
 </div>
+
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="scrim" data-mclose></div>
+  <form class="panel" id="mform" novalidate>
+    <div class="ph"><h2 id="modal-title">Edit</h2><button class="btn sm ghost" type="button" data-mclose>Tutup</button></div>
+    <div class="pbody" id="mbody"></div>
+    <div class="pf"><button class="btn danger sm" type="button" id="mdelete">Padam</button><div style="display:flex;gap:8px"><button class="btn ghost" type="button" data-mclose>Batal</button><button class="btn gold" type="submit" id="msave">Simpan</button></div></div>
+  </form>
+</div>
+<input type="file" id="filepick" accept="image/jpeg,image/png,image/webp" hidden>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -231,8 +284,16 @@ tr:last-child td{border-bottom:0}
   $("#logout").addEventListener("click", logout);
 
   function apply(j){ data = j.orders; counts = j.counts || {}; summary = j.summary || {}; render(); }
+  var products = [], testimonials = [];
   function load(){
     $("#list").innerHTML = '<div class="empty">Memuatkan…</div>';
+    $("#csv").hidden = (tab === "products" || tab === "testimonials");
+    if (tab === "products"){
+      return api("/api/admin/products").then(function(j){ products = j.products; render(); }).catch(function(e){ $("#list").innerHTML = '<div class="empty">'+esc(e.message)+'</div>'; });
+    }
+    if (tab === "testimonials"){
+      return api("/api/admin/testimonials").then(function(j){ testimonials = j.testimonials; render(); }).catch(function(e){ $("#list").innerHTML = '<div class="empty">'+esc(e.message)+'</div>'; });
+    }
     if (tab === "customers"){
       return api("/api/admin/customers").then(function(j){ customers = j.customers; render(); }).catch(function(e){ $("#list").innerHTML = '<div class="empty">'+esc(e.message)+'</div>'; });
     }
@@ -267,6 +328,8 @@ tr:last-child td{border-bottom:0}
 
   function render(){
     renderStats();
+    if (tab === "products"){ renderProducts(); return; }
+    if (tab === "testimonials"){ renderTestimonials(); return; }
     if (tab === "customers"){
       var cs = customers.filter(matchQ);
       if (!cs.length){ $("#list").innerHTML = '<div class="empty"><b>Belum ada customer</b>Customer disimpan bila mereka checkout.</div>'; return; }
@@ -319,6 +382,12 @@ tr:last-child td{border-bottom:0}
   $("#q").addEventListener("input", render);
   $("#reload").addEventListener("click", load);
   $("#list").addEventListener("click", function(e){
+    if (e.target.closest("#add-product")){ openProduct(null); return; }
+    if (e.target.closest("#add-testi")){ openTesti(null); return; }
+    var ep = e.target.closest("[data-editp]");
+    if (ep){ openProduct(products.filter(function(p){ return p.id === ep.getAttribute("data-editp"); })[0]); return; }
+    var et = e.target.closest("[data-editt]");
+    if (et){ openTesti(testimonials.filter(function(t){ return String(t.id) === et.getAttribute("data-editt"); })[0]); return; }
     var s = e.target.closest("[data-ship]");
     if (s){
       var id = s.getAttribute("data-ship"), trk = document.getElementById("trk-" + id).value.trim();
@@ -338,6 +407,150 @@ tr:last-child td{border-bottom:0}
       var o = data.filter(function(x){ return x.id === c.getAttribute("data-copy"); })[0];
       navigator.clipboard.writeText(addrText(o)).then(function(){ toast("Alamat disalin."); }, function(){ toast("Tidak dapat salin. Pilih teks alamat secara manual."); });
     }
+  });
+
+  /* ---------- Produk ---------- */
+  function rmv(sen){ return (Number(sen||0)/100).toFixed(2); }
+  function renderProducts(){
+    var q = $("#q").value.trim().toLowerCase();
+    var ps = products.filter(function(p){ return !q || (p.name + " " + p.cat).toLowerCase().indexOf(q) >= 0; });
+    var head = '<div class="addbar"><p>'+products.length+' produk · '+products.filter(function(p){ return p.visible; }).length+' dipapar di kedai</p><button class="btn gold" type="button" id="add-product">+ Tambah Produk</button></div>';
+    if (!ps.length){ $("#list").innerHTML = head + '<div class="empty"><b>Tiada produk</b>Tekan Tambah Produk untuk mula.</div>'; return; }
+    $("#list").innerHTML = head + '<div class="pgrid">' + ps.map(function(p){
+      return '<article class="pcard'+(p.visible?'':' off')+'">'+(p.image ? '<img src="'+esc(p.image)+'" alt="" loading="lazy">' : '<div class="noimg">Tiada gambar</div>')+
+        '<div class="pb"><span class="pn">'+esc(p.name)+'</span><span class="pc">'+esc(p.cat || "-")+' · turutan '+p.sort+'</span>'+
+        '<span class="pp">500g RM'+rmv(p.price500)+' · 1kg RM'+rmv(p.price1kg)+'</span></div>'+
+        '<div class="pa"><span class="vis '+(p.visible?'on':'off')+'">'+(p.visible?'● Dipapar':'○ Disorok')+'</span><button class="btn sm" type="button" data-editp="'+esc(p.id)+'">Edit</button></div></article>';
+    }).join("") + '</div>';
+  }
+  function renderTestimonials(){
+    var head = '<div class="addbar"><p>'+testimonials.length+' testimoni · '+testimonials.filter(function(t){ return t.visible; }).length+' dipapar di kedai</p><button class="btn gold" type="button" id="add-testi">+ Tambah Testimoni</button></div>';
+    if (!testimonials.length){ $("#list").innerHTML = head + '<div class="empty"><b>Belum ada testimoni</b>Seksyen Testimoni di kedai akan keluar bila ada sekurang-kurangnya satu testimoni dipapar.</div>'; return; }
+    $("#list").innerHTML = head + '<div class="tlist">' + testimonials.map(function(t){
+      return '<article class="tcard">'+(t.image ? '<img src="'+esc(t.image)+'" alt="" loading="lazy">' : '')+(t.text ? '<q>'+esc(t.text)+'</q>' : '')+
+        '<span class="tw"><b>'+esc(t.name)+'</b>'+(t.location ? ' · '+esc(t.location) : '')+'</span>'+
+        '<div style="display:flex;justify-content:space-between;align-items:center"><span class="vis '+(t.visible?'on':'off')+'">'+(t.visible?'● Dipapar':'○ Disorok')+'</span><button class="btn sm" type="button" data-editt="'+t.id+'">Edit</button></div></article>';
+    }).join("") + '</div>';
+  }
+
+  /* ---------- Borang ---------- */
+  var mode = null, editing = null, imageUrl = "";
+  var CATS = ["Single Origin","Barista Blend","House Blend","Specialty"];
+  function fld(id, label, val, opts){
+    opts = opts || {};
+    var input = opts.textarea
+      ? '<textarea id="'+id+'" maxlength="'+(opts.max||300)+'">'+esc(val)+'</textarea>'
+      : '<input type="'+(opts.type||"text")+'" id="'+id+'" value="'+esc(val)+'"'+(opts.step?' step="'+opts.step+'" min="0" inputmode="decimal"':'')+(opts.list?' list="'+opts.list+'"':'')+' maxlength="'+(opts.max||200)+'"'+(opts.ph?' placeholder="'+esc(opts.ph)+'"':'')+'>';
+    return '<div class="field'+(opts.full?' full':'')+'"><label for="'+id+'">'+label+'</label>'+input+(opts.hint?'<span class="hint">'+opts.hint+'</span>':'')+'</div>';
+  }
+  function imgField(){
+    return '<div class="field full"><label>Gambar (square)</label><div class="imgpick"><div class="prev" id="mprev">'+(imageUrl ? '<img src="'+esc(imageUrl)+'" alt="">' : 'Tiada gambar')+'</div>'+
+      '<div class="acts"><button class="btn sm" type="button" id="mpick">'+(imageUrl?'Tukar gambar':'Upload gambar')+'</button>'+(imageUrl?'<button class="btn sm ghost" type="button" id="mclear">Buang gambar</button>':'')+
+      '<span class="hint">JPG/PNG. Gambar akan dipotong jadi square secara auto.</span></div></div></div>';
+  }
+  function openProduct(p){
+    mode = "product"; editing = p || null; imageUrl = p ? p.image : "";
+    $("#modal-title").textContent = p ? "Edit Produk" : "Tambah Produk";
+    $("#mdelete").hidden = !p;
+    p = p || {visible:1, sort:100};
+    $("#mbody").innerHTML = imgField() +
+      fld("f-name","Nama produk *",p.name||"",{full:true,max:80,ph:"contoh: King Gayo"}) +
+      fld("f-cat","Kategori",p.cat||"",{list:"catlist",ph:"Single Origin"}) +
+      fld("f-tag","Label kecil atas nama",p.tag||"",{ph:"contoh: Barista Blend"}) +
+      fld("f-badge","Badge atas gambar",p.badge||"",{ph:"contoh: 100% Arabica"}) +
+      '<div class="field"><label>&nbsp;</label><label class="check"><input type="checkbox" id="f-strong"'+(p.strong?' checked':'')+'> Badge warna merah</label></div>' +
+      fld("f-p500","Harga 500g (RM) *",p.price500?rmv(p.price500):"",{type:"number",step:"0.01"}) +
+      fld("f-p1kg","Harga 1kg (RM) *",p.price1kg?rmv(p.price1kg):"",{type:"number",step:"0.01"}) +
+      fld("f-origin","Origin",p.origin||"",{full:true}) +
+      fld("f-notes","Taste Note",p.notes||"",{full:true,ph:"contoh: Dark Chocolate, Caramel"}) +
+      fld("f-aroma","Aroma",p.aroma||"") + fld("f-bean","Jenis biji",p.bean||"",{ph:"100% Arabica"}) +
+      fld("f-body","Body",p.body||"") + fld("f-acid","Acidity",p.acid||"") +
+      fld("f-after","After Taste",p.after||"") + fld("f-roast","Roast",p.roast||"",{ph:"Medium Dark"}) +
+      fld("f-sort","Turutan",p.sort,{type:"number",step:"1",hint:"Nombor kecil keluar dulu."}) +
+      '<div class="field"><label>&nbsp;</label><label class="check"><input type="checkbox" id="f-visible"'+(p.visible?' checked':'')+'> Papar di kedai</label></div>' +
+      '<datalist id="catlist">'+CATS.map(function(c){ return '<option value="'+c+'">'; }).join("")+'</datalist>';
+    showModal();
+  }
+  function openTesti(t){
+    mode = "testi"; editing = t || null; imageUrl = t ? t.image : "";
+    $("#modal-title").textContent = t ? "Edit Testimoni" : "Tambah Testimoni";
+    $("#mdelete").hidden = !t;
+    t = t || {visible:1, sort:100};
+    $("#mbody").innerHTML = imgField() +
+      fld("f-tname","Nama pelanggan *",t.name||"",{max:60}) +
+      fld("f-tloc","Lokasi",t.location||"",{max:60,ph:"contoh: Shah Alam"}) +
+      fld("f-ttext","Ayat testimoni",t.text||"",{full:true,textarea:true,max:800,hint:"Boleh kosongkan kalau guna gambar screenshot sahaja."}) +
+      fld("f-tsort","Turutan",t.sort,{type:"number",step:"1"}) +
+      '<div class="field"><label>&nbsp;</label><label class="check"><input type="checkbox" id="f-tvisible"'+(t.visible?' checked':'')+'> Papar di kedai</label></div>';
+    showModal();
+  }
+  function showModal(){ $("#modal").hidden = false; document.body.style.overflow = "hidden"; setTimeout(function(){ var f = $("#mbody input[type=text]"); if (f) f.focus(); }, 30); }
+  function hideModal(){ $("#modal").hidden = true; document.body.style.overflow = ""; }
+  function refreshImg(){
+    var box = $("#mbody .imgpick"); if (!box) return;
+    box.parentNode.outerHTML = imgField();
+  }
+  $("#modal").addEventListener("click", function(e){
+    if (e.target.closest("[data-mclose]")){ hideModal(); return; }
+    if (e.target.closest("#mpick")){ $("#filepick").value = ""; $("#filepick").click(); return; }
+    if (e.target.closest("#mclear")){ imageUrl = ""; refreshImg(); }
+  });
+  document.addEventListener("keydown", function(e){ if (e.key === "Escape" && !$("#modal").hidden) hideModal(); });
+
+  function squareJpeg(file){
+    return new Promise(function(resolve, reject){
+      var url = URL.createObjectURL(file), img = new Image();
+      img.onload = function(){
+        var side = Math.min(img.naturalWidth, img.naturalHeight), out = Math.min(1000, side);
+        var c = document.createElement("canvas"); c.width = out; c.height = out;
+        var ctx = c.getContext("2d");
+        ctx.drawImage(img, (img.naturalWidth - side) / 2, (img.naturalHeight - side) / 2, side, side, 0, 0, out, out);
+        URL.revokeObjectURL(url);
+        c.toBlob(function(b){ b ? resolve(b) : reject(new Error("Tidak dapat proses gambar.")); }, "image/jpeg", 0.85);
+      };
+      img.onerror = function(){ URL.revokeObjectURL(url); reject(new Error("Fail ini bukan gambar yang boleh dibaca.")); };
+      img.src = url;
+    });
+  }
+  $("#filepick").addEventListener("change", function(){
+    var f = this.files && this.files[0]; if (!f) return;
+    var btn = $("#mpick"); if (btn){ btn.disabled = true; btn.textContent = "Memuat naik…"; }
+    squareJpeg(f).then(function(blob){
+      return fetch("/api/admin/upload", {method:"POST", headers:{"authorization":"Bearer " + pw, "x-content-type":"image/jpeg"}, body: blob}).then(function(r){ return r.json(); });
+    }).then(function(j){
+      if (!j.ok) throw new Error(j.error || "Upload gagal.");
+      imageUrl = j.url; refreshImg(); toast("Gambar dimuat naik. Tekan Simpan.");
+    }).catch(function(err){ toast(err.message); refreshImg(); });
+  });
+
+  $("#mform").addEventListener("submit", function(e){
+    e.preventDefault();
+    var v = function(id){ var el = document.getElementById(id); return el ? el.value.trim() : ""; };
+    var ck = function(id){ var el = document.getElementById(id); return el ? el.checked : false; };
+    var body, path;
+    if (mode === "product"){
+      if (!v("f-name")){ toast("Isi nama produk."); return; }
+      if (!(parseFloat(v("f-p500")) > 0) || !(parseFloat(v("f-p1kg")) > 0)){ toast("Isi harga 500g dan 1kg."); return; }
+      path = "/api/admin/products";
+      body = {id: editing ? editing.id : "", name:v("f-name"), cat:v("f-cat"), tag:v("f-tag"), badge:v("f-badge"), strong:ck("f-strong"),
+        price500:v("f-p500"), price1kg:v("f-p1kg"), origin:v("f-origin"), notes:v("f-notes"), aroma:v("f-aroma"), bean:v("f-bean"),
+        body:v("f-body"), acid:v("f-acid"), after:v("f-after"), roast:v("f-roast"), sort:v("f-sort"), visible:ck("f-visible"), image:imageUrl};
+    } else {
+      if (!v("f-tname")){ toast("Isi nama pelanggan."); return; }
+      path = "/api/admin/testimonials";
+      body = {id: editing ? editing.id : "", name:v("f-tname"), location:v("f-tloc"), text:v("f-ttext"), sort:v("f-tsort"), visible:ck("f-tvisible"), image:imageUrl};
+    }
+    var btn = $("#msave"); btn.disabled = true;
+    api(path, {method:"POST", body: JSON.stringify(body)}).then(function(){ hideModal(); toast("Disimpan."); load(); })
+      .catch(function(err){ toast(err.message); }).then(function(){ btn.disabled = false; });
+  });
+  var confirmDel = 0;
+  $("#mdelete").addEventListener("click", function(){
+    var btn = this;
+    if (Date.now() - confirmDel > 4000){ confirmDel = Date.now(); btn.textContent = "Tekan sekali lagi untuk padam"; setTimeout(function(){ btn.textContent = "Padam"; }, 4000); return; }
+    confirmDel = 0;
+    var path = mode === "product" ? "/api/admin/products/delete" : "/api/admin/testimonials/delete";
+    api(path, {method:"POST", body: JSON.stringify({id: editing.id})}).then(function(){ hideModal(); toast("Dipadam."); load(); }).catch(function(err){ toast(err.message); });
   });
 
   function csvCell(v){ v = String(v==null?"":v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g,'""') + '"' : v; }

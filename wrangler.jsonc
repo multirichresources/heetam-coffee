@@ -5,8 +5,11 @@
   "assets": {
     "directory": "./public",
     "binding": "ASSETS",
-    "run_worker_first": ["/api/*"]
+    "run_worker_first": ["/api/*", "/media/*"]
   },
+  "kv_namespaces": [
+    { "binding": "IMAGES", "id": "68d00900230b4d0da78debec08b9c785" }
+  ],
   "d1_databases": [
     { "binding": "DB", "database_name": "heetam-db", "database_id": "5b45c712-66bb-480f-8def-5a5416fea435" }
   ]
