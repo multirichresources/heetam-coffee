@@ -171,6 +171,10 @@ tr:last-child td{border-bottom:0}
 .check input{width:18px;height:18px;accent-color:var(--gold)}
 .btn.danger{border-color:rgba(238,125,114,.5);color:var(--bad);background:transparent}
 .btn.danger:hover{border-color:var(--bad)}
+.lang{display:inline-flex;border:1px solid var(--line-2);border-radius:9px;overflow:hidden}
+.lang button{border:0;background:transparent;color:var(--muted);font-weight:700;font-size:12.5px;padding:6px 10px;cursor:pointer}
+.lang button[aria-pressed=true]{background:var(--gold);color:var(--on-gold)}
+.login .lang{align-self:center}
 @media (max-width:560px){.modal .pbody{grid-template-columns:1fr}}
 </style>
 </head>
@@ -187,6 +191,7 @@ tr:last-child td{border-bottom:0}
     </div>
     <p class="err" id="login-err"></p>
     <button class="btn gold" type="submit" id="login-btn">Masuk</button>
+    <div class="lang" role="group" aria-label="Language / Bahasa"><button type="button" data-lang="ms">BM</button><button type="button" data-lang="en">EN</button></div>
   </form>
 </div>
 
@@ -195,6 +200,7 @@ tr:last-child td{border-bottom:0}
     <div class="wrap">
       <a class="brand" href="/" title="Buka kedai"><img src="/img/logo.png" alt="Heetam Coffee" width="255" height="80"><span>Admin</span></a>
       <div class="top-actions">
+        <div class="lang" role="group" aria-label="Language / Bahasa"><button type="button" data-lang="ms">BM</button><button type="button" data-lang="en">EN</button></div>
         <button class="btn sm ghost" type="button" id="reload">Muat semula</button>
         <button class="btn sm ghost" type="button" id="logout">Log keluar</button>
       </div>
@@ -246,6 +252,107 @@ tr:last-child td{border-bottom:0}
 <script>
 (function(){
   "use strict";
+
+  /* ---------- Bahasa / Language ---------- */
+  var LANG = "ms"; try { LANG = localStorage.getItem("heetam_admin_lang") === "en" ? "en" : "ms"; } catch(e){}
+  document.documentElement.lang = LANG;
+  var EN = {
+    "Admin Order":"Order Admin", "Log masuk untuk urus order dan customer":"Log in to manage orders and customers", "Kata laluan":"Password", "Masuk":"Log in", "Menyemak…":"Checking…",
+    "Buka kedai":"Open shop", "Muat semula":"Refresh", "Log keluar":"Log out",
+    "Perlu dipos":"To ship", "order dah dibayar":"paid orders", "Jualan hari ini":"Sales today", "tidak termasuk order test":"excluding test orders",
+    "Jualan bulan ini":"Sales this month", "Dah dipos":"Shipped", "keseluruhan":"all time", "Paparan":"View",
+    "Perlu Pos":"To Ship", "Dipos":"Shipped", "Belum Bayar":"Unpaid", "Belum bayar":"Unpaid", "Gagal":"Failed", "Semua":"All", "Customer":"Customers", "Produk":"Products", "Testimoni":"Testimonials",
+    "Dibayar":"Paid", "Cari":"Search", "Cari nama, telefon, no. order":"Search name, phone, order no.", "Export CSV":"Export CSV",
+    "Memuatkan…":"Loading…", "Item":"Items", "Pos":"Postage", "Jumlah":"Total", "Hantar kepada":"Ship to", "Salin alamat":"Copy address",
+    "No. tracking":"Tracking no.", "contoh SPXMY0123456789":"e.g. SPXMY0123456789", "Tandakan Dipos":"Mark as Shipped", "Status":"Status",
+    "Customer belum selesai bayar di CHIP.":"Customer has not completed payment on CHIP.", "Semak dengan CHIP":"Check with CHIP",
+    "Bayaran gagal atau dibatalkan. Tiada tindakan diperlukan.":"Payment failed or was cancelled. No action needed.",
+    "Tiada order perlu dipos":"No orders to ship", "Order baru yang dah dibayar akan keluar di sini.":"New paid orders will appear here.",
+    "Belum ada order dipos":"No shipped orders yet", "Order yang ditandakan Dipos akan keluar di sini.":"Orders marked as Shipped will appear here.",
+    "Tiada order belum bayar":"No unpaid orders", "Customer yang tak habis bayar di CHIP akan keluar di sini.":"Customers who didn't finish paying on CHIP will appear here.",
+    "Tiada bayaran gagal":"No failed payments", "Belum ada order":"No orders yet", "Order pertama akan keluar di sini.":"Your first order will appear here.",
+    "Belum ada customer":"No customers yet", "Customer disimpan bila mereka checkout.":"Customers are saved when they check out.",
+    "Nama":"Name", "Telefon":"Phone", "Emel":"Email", "Lokasi":"Location", "Order dibayar":"Paid orders", "Promo":"Promo", "Terakhir":"Last active",
+    "Ya":"Yes", "Tidak":"No", "Bandar":"City", "Negeri":"State", "Setuju promo":"Promo consent", "Kemas kini":"Updated",
+    "No. Order":"Order No.", "Tarikh":"Date", "Alamat 1":"Address 1", "Alamat 2":"Address 2", "Poskod":"Postcode", "Berat (kg)":"Weight (kg)",
+    "Subtotal (RM)":"Subtotal (RM)", "Pos (RM)":"Postage (RM)", "Jumlah (RM)":"Total (RM)", "Nota":"Note", "Tracking":"Tracking",
+    "+ Tambah Produk":"+ Add Product", "Tiada produk":"No products", "Tekan Tambah Produk untuk mula.":"Tap Add Product to start.",
+    "Tiada gambar":"No image", "Edit":"Edit", "● Dipapar":"● Visible", "○ Disorok":"○ Hidden",
+    "+ Tambah Testimoni":"+ Add Testimonial", "Belum ada testimoni":"No testimonials yet",
+    "Seksyen Testimoni di kedai akan keluar bila ada sekurang-kurangnya satu testimoni dipapar.":"The Testimonials section appears in the shop once at least one testimonial is visible.",
+    "Edit Produk":"Edit Product", "Tambah Produk":"Add Product", "Edit Testimoni":"Edit Testimonial", "Tambah Testimoni":"Add Testimonial",
+    "Tutup":"Close", "Padam":"Delete", "Batal":"Cancel", "Simpan":"Save", "Tekan sekali lagi untuk padam":"Tap again to delete",
+    "Gambar (square)":"Image (square)", "Upload gambar":"Upload image", "Tukar gambar":"Change image", "Buang gambar":"Remove image", "Memuat naik…":"Uploading…",
+    "JPG/PNG. Gambar akan dipotong jadi square secara auto.":"JPG/PNG. The image is cropped to a square automatically.",
+    "Nama produk *":"Product name *", "contoh: King Gayo":"e.g. King Gayo", "Kategori":"Category", "Label kecil atas nama":"Small label above name",
+    "contoh: Barista Blend":"e.g. Barista Blend", "Badge atas gambar":"Badge on image", "contoh: 100% Arabica":"e.g. 100% Arabica", "Badge warna merah":"Red badge",
+    "Harga 500g (RM) *":"Price 500g (RM) *", "Harga 1kg (RM) *":"Price 1kg (RM) *", "Origin":"Origin", "Taste Note":"Taste Notes",
+    "contoh: Dark Chocolate, Caramel":"e.g. Dark Chocolate, Caramel", "Aroma":"Aroma", "Jenis biji":"Bean type", "Body":"Body", "Acidity":"Acidity",
+    "After Taste":"After Taste", "Roast":"Roast", "Turutan":"Order", "Nombor kecil keluar dulu.":"Smaller numbers appear first.", "Papar di kedai":"Show in shop",
+    "Nama pelanggan *":"Customer name *", "contoh: Shah Alam":"e.g. Shah Alam", "Ayat testimoni":"Testimonial text",
+    "Boleh kosongkan kalau guna gambar screenshot sahaja.":"Can be left empty if using a screenshot only.",
+    "Masukkan no. tracking dulu.":"Enter the tracking number first.", "Alamat disalin.":"Address copied.",
+    "Tidak dapat salin. Pilih teks alamat secara manual.":"Couldn't copy. Select the address text manually.",
+    "Gambar dimuat naik. Tekan Simpan.":"Image uploaded. Tap Save.", "Disimpan.":"Saved.", "Dipadam.":"Deleted.",
+    "Isi nama produk.":"Enter the product name.", "Isi harga 500g dan 1kg.":"Enter the 500g and 1kg prices.", "Isi nama pelanggan.":"Enter the customer name.",
+    "Tiada data untuk export.":"No data to export.", "Upload gagal.":"Upload failed.", "Tidak dapat proses gambar.":"Couldn't process the image.",
+    "Fail ini bukan gambar yang boleh dibaca.":"This file isn't a readable image.", "Ralat":"Error",
+    "Kata laluan salah.":"Wrong password.", "ADMIN_PASSWORD belum ditetapkan dalam Cloudflare.":"ADMIN_PASSWORD is not set in Cloudflare.",
+    "Nama produk wajib diisi.":"Product name is required.", "Harga 500g dan 1kg wajib diisi dengan betul.":"Enter valid 500g and 1kg prices.",
+    "Gambar tidak sah.":"Invalid image.", "Produk tidak dijumpai.":"Product not found.", "Nama pelanggan wajib diisi.":"Customer name is required.",
+    "Isi ayat testimoni atau upload gambar.":"Enter testimonial text or upload an image.", "Testimoni tidak dijumpai.":"Testimonial not found.",
+    "Storan gambar belum disambung.":"Image storage is not connected.", "Format gambar mesti JPG, PNG atau WEBP.":"Image must be JPG, PNG or WEBP.",
+    "Gambar kosong.":"Empty image.", "Gambar terlalu besar (maksimum 2MB).":"Image too large (max 2MB).", "Ralat server. Sila cuba lagi.":"Server error. Please try again.",
+    "Whole Bean":"Whole Bean", "Halus":"Ground"
+  };
+  var RX = [
+    [/^(\d+) order dibayar$/, "$1 paid orders"],
+    [/^(\d+) customer · (\d+) setuju terima promo$/, "$1 customers · $2 opted in to promos"],
+    [/^(\d+) produk · (\d+) dipapar di kedai$/, "$1 products · $2 visible in shop"],
+    [/^(\d+) testimoni · (\d+) dipapar di kedai$/, "$1 testimonials · $2 visible in shop"],
+    [/^Dibayar (.+)$/, "Paid $1"], [/^Dibuat (.+)$/, "Created $1"], [/^Dipos (.+)$/, "Shipped $1"],
+    [/^(.*) · turutan (\d+)$/, "$1 · order $2"],
+    [/^Nota: ([\s\S]*)$/, "Note: $1"],
+    [/^(.*) · Halus$/, "$1 · Ground"],
+    [/^Status: (.*)$/, "Status: $1"],
+    [/^(.+) ditandakan Dipos\.$/, "$1 marked as Shipped."],
+    [/^Ralat server \((\d+)\)\.$/, "Server error ($1)."]
+  ];
+  function T(str){
+    if (LANG !== "en" || str == null) return str;
+    var s = String(str), k = s.trim();
+    if (!k) return s;
+    if (Object.prototype.hasOwnProperty.call(EN, k)) return s.replace(k, EN[k]);
+    for (var i = 0; i < RX.length; i++) if (RX[i][0].test(k)) return s.replace(k, k.replace(RX[i][0], RX[i][1]));
+    return s;
+  }
+  var SKIP = {SCRIPT:1, STYLE:1, TEXTAREA:1};
+  function trNode(n){
+    if (n.nodeType === 3){
+      if (n.parentNode && SKIP[n.parentNode.nodeName]) return;
+      var v = T(n.nodeValue); if (v !== n.nodeValue) n.nodeValue = v; return;
+    }
+    if (n.nodeType !== 1 || SKIP[n.nodeName]) return;
+    ["placeholder","title","aria-label"].forEach(function(a){ if (n.hasAttribute && n.hasAttribute(a)){ var v = T(n.getAttribute(a)); if (v !== n.getAttribute(a)) n.setAttribute(a, v); } });
+    for (var c = n.firstChild; c; c = c.nextSibling) trNode(c);
+  }
+  if (LANG === "en"){
+    trNode(document.body);
+    new MutationObserver(function(ms){
+      ms.forEach(function(m){
+        if (m.type === "characterData") trNode(m.target);
+        else m.addedNodes.forEach(trNode);
+      });
+    }).observe(document.body, {childList:true, subtree:true, characterData:true});
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("[data-lang]"), function(b){
+    b.setAttribute("aria-pressed", b.getAttribute("data-lang") === LANG ? "true" : "false");
+    b.addEventListener("click", function(){
+      if (b.getAttribute("data-lang") === LANG) return;
+      try { localStorage.setItem("heetam_admin_lang", b.getAttribute("data-lang")); } catch(e){}
+      location.reload();
+    });
+  });
   var KEY = "heetam_admin_pw";
   var pw = ""; try { pw = sessionStorage.getItem(KEY) || ""; } catch(e){}
   var tab = "paid", data = [], customers = [], counts = {}, summary = {};
@@ -253,9 +360,9 @@ tr:last-child td{border-bottom:0}
   function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
   function sen(n){ return "RM" + (Number(n||0)/100).toFixed(2); }
   function senShort(n){ var v = Number(n||0)/100; return "RM" + (v % 1 === 0 ? v.toLocaleString("en-MY") : v.toLocaleString("en-MY", {minimumFractionDigits:2, maximumFractionDigits:2})); }
-  function dt(s){ if (!s) return "-"; return new Date(s).toLocaleString("ms-MY", {day:"2-digit", month:"short", hour:"2-digit", minute:"2-digit", timeZone:"Asia/Kuala_Lumpur"}); }
+  function dt(s){ if (!s) return "-"; return new Date(s).toLocaleString(LANG === "en" ? "en-MY" : "ms-MY", {day:"2-digit", month:"short", hour:"2-digit", minute:"2-digit", timeZone:"Asia/Kuala_Lumpur"}); }
   var tt; function toast(m){ var t=$("#toast"); t.textContent=m; t.classList.add("show"); clearTimeout(tt); tt=setTimeout(function(){ t.classList.remove("show"); }, 2400); }
-  var LABEL = {paid:"Dibayar", pending:"Belum bayar", shipped:"Dipos", failed:"Gagal"};
+  var LABEL = LANG === "en" ? {paid:"Paid", pending:"Unpaid", shipped:"Shipped", failed:"Failed"} : {paid:"Dibayar", pending:"Belum bayar", shipped:"Dipos", failed:"Gagal"};
 
   function api(path, opts){
     opts = opts || {};
@@ -566,6 +673,8 @@ tr:last-child td{border-bottom:0}
           kg, (o.subtotal/100).toFixed(2), (o.postage/100).toFixed(2), (o.total/100).toFixed(2), o.note, o.tracking];
       }));
     }
+    rows[0] = rows[0].map(T);
+    if (LANG === "en") rows.forEach(function(r, i){ if (i) r.forEach(function(v, k){ if (v === "Ya" || v === "Tidak") r[k] = T(v); }); });
     if (rows.length < 2){ toast("Tiada data untuk export."); return; }
     var csv = "﻿" + rows.map(function(r){ return r.map(csvCell).join(","); }).join("\r\n");
     var a = document.createElement("a");
