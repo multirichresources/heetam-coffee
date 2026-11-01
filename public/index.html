@@ -156,7 +156,8 @@ main,footer,header{position:relative;z-index:2}
 .reason p{color:var(--muted);font-size:15px;margin-top:4px}
 .tip{margin-top:26px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;font-size:15px;color:var(--muted)}
 .tip b{color:var(--ink)}
-@media (max-width:860px){.fresh{grid-template-columns:1fr;gap:32px}.fresh-photo{aspect-ratio:16/11}}
+@media (max-width:860px){.fresh{grid-template-columns:1fr;gap:32px}.fresh-photo{aspect-ratio:4/3}.fresh-photo img{object-position:center 70%}}
+@media (max-width:640px){.section{padding-block:56px}.section-head{margin-bottom:26px}}
 @media (max-width:520px){.reasons{grid-template-columns:1fr}}
 
 /* Testimoni */
@@ -393,8 +394,8 @@ legend{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:upperc
   <section class="section" id="fresh">
     <div class="wrap fresh">
       <div class="fresh-photo">
-        <img src="img/royal-indo-bag.jpg" alt="Beg Heetam Royal Indo Barista Blend dengan biji kopi">
-        <div class="cap"><span class="script">Heetam Coffee</span>Label setiap beg ada ruang Roast Date</div>
+        <img src="img/fresh-beans.jpg" alt="Biji kopi yang baru di-roast" loading="lazy" width="800" height="1000">
+        <div class="cap"><span class="script">Freshly Roasted</span>Setiap beg Heetam ada ruang Roast Date</div>
       </div>
       <div>
         <p class="eyebrow">Tentang Fresh</p>
