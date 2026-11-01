@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Admin · Heetam Coffee</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{--bg:#0D0A07;--surface:#1B150F;--surface-2:#231B13;--line:#3A2D20;--ink:#F5EDE0;--muted:#B8A994;--gold:#D9A441;--gold-hi:#F3CD74;--on-gold:#1A1206;--ok:#7FC48A;--warn:#F3CD74;--bad:#F2867A;--ship:#8FB8F2;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px;line-height:1.5}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--gold-hi);outline-offset:2px}
+.wrap{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:5}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:62px}
+header img{height:36px;width:auto;display:block}
+h1{font-family:"Bebas Neue","Arial Narrow",Impact,sans-serif;font-weight:400;font-size:30px;margin:0;letter-spacing:.02em}
+.btn{border:1.5px solid var(--gold);background:transparent;border-radius:30px;padding:8px 16px;font-weight:600;cursor:pointer;font-size:14px}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:var(--on-gold)}
+.btn.sm{padding:5px 12px;font-size:13px}
+.btn[disabled]{opacity:.6}
+.login{max-width:380px;margin:12vh auto 0;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:26px;display:flex;flex-direction:column;gap:14px}
+input[type=password],input[type=text],input[type=search]{width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:10px;background:var(--bg)}
+.err{color:var(--bad);font-size:14px;min-height:1em}
+.bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding-block:18px}
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+.tab{border:1.5px solid var(--line);background:transparent;border-radius:30px;padding:6px 14px;cursor:pointer;color:var(--muted);font-weight:500;font-size:14px}
+.tab[aria-pressed=true]{background:var(--gold);border-color:var(--gold);color:var(--on-gold);font-weight:700}
+.tab b{font-variant-numeric:tabular-nums;margin-left:4px}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tools input{width:220px;max-width:100%}
+.list{display:flex;flex-direction:column;gap:12px;padding-bottom:60px}
+.order{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:grid;grid-template-columns:1.1fr 1fr .9fr;gap:16px}
+.order > *{min-width:0}
+.oid{font-weight:700;font-variant-numeric:tabular-nums}
+.meta{color:var(--muted);font-size:13px}
+.pill{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border-radius:20px;padding:2px 9px;border:1px solid currentColor;margin-left:6px;vertical-align:1px}
+.st-paid{color:var(--ok)} .st-pending{color:var(--warn)} .st-shipped{color:var(--ship)} .st-failed{color:var(--bad)}
+.addr{background:var(--surface-2);border-radius:10px;padding:10px 12px;font-size:14px;white-space:pre-line;word-break:break-word}
+.items{margin:0;padding:0;list-style:none;font-size:14px}
+.items li{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-bottom:1px dashed var(--line)}
+.items li span:last-child{font-variant-numeric:tabular-nums;white-space:nowrap}
+.tot{display:flex;justify-content:space-between;font-weight:700;margin-top:6px;font-variant-numeric:tabular-nums}
+.ship{display:flex;flex-direction:column;gap:8px}
+.note{font-size:13px;color:var(--gold-hi)}
+.test{color:var(--warn);font-size:12px;font-weight:700}
+.empty{color:var(--muted);text-align:center;padding:48px 0}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--muted);font-weight:600;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.tablewrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:30px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+@media (max-width:820px){.order{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><a href="/"><img src="/img/logo.png" alt="Heetam Coffee" width="255" height="80"></a><h1>Admin Order</h1><button class="btn sm" type="button" id="logout" hidden>Log keluar</button></div></header>
+
+<main class="wrap">
+  <form class="login" id="login">
+    <h1>Log Masuk Admin</h1>
+    <label for="pw">Kata laluan</label>
+    <input type="password" id="pw" autocomplete="current-password" required>
+    <p class="err" id="login-err"></p>
+    <button class="btn gold" type="submit">Masuk</button>
+  </form>
+
+  <section id="app" hidden>
+    <div class="bar">
+      <div class="tabs" id="tabs" role="group" aria-label="Status order">
+        <button class="tab" type="button" data-st="paid" aria-pressed="true">Dibayar (perlu pos)<b data-count="paid">0</b></button>
+        <button class="tab" type="button" data-st="shipped" aria-pressed="false">Dipos<b data-count="shipped">0</b></button>
+        <button class="tab" type="button" data-st="pending" aria-pressed="false">Menunggu bayaran<b data-count="pending">0</b></button>
+        <button class="tab" type="button" data-st="failed" aria-pressed="false">Gagal<b data-count="failed">0</b></button>
+        <button class="tab" type="button" data-st="all" aria-pressed="false">Semua</button>
+        <button class="tab" type="button" data-st="customers" aria-pressed="false">Customer</button>
+      </div>
+      <div class="tools">
+        <label for="q" style="position:absolute;left:-9999px">Cari</label>
+        <input type="search" id="q" placeholder="Cari nama, telefon, no. order">
+        <button class="btn sm" type="button" id="reload">Muat semula</button>
+        <button class="btn sm gold" type="button" id="csv">Export CSV</button>
+      </div>
+    </div>
+    <div id="list" class="list"></div>
+  </section>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  "use strict";
+  var KEY = "heetam_admin_pw";
+  var pw = ""; try { pw = sessionStorage.getItem(KEY) || ""; } catch(e){}
+  var tab = "paid", data = [], customers = [], counts = {};
+  function $(s){ return document.querySelector(s); }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+  function sen(n){ return "RM" + (Number(n||0)/100).toFixed(2); }
+  function dt(s){ if (!s) return "-"; var d = new Date(s); return d.toLocaleString("ms-MY", {day:"2-digit", month:"short", year:"numeric", hour:"2-digit", minute:"2-digit", timeZone:"Asia/Kuala_Lumpur"}); }
+  var tt; function toast(m){ var t=$("#toast"); t.textContent=m; t.classList.add("show"); clearTimeout(tt); tt=setTimeout(function(){ t.classList.remove("show"); }, 2400); }
+  var LABEL = {paid:"Dibayar", pending:"Menunggu", shipped:"Dipos", failed:"Gagal"};
+
+  function api(path, opts){
+    opts = opts || {};
+    opts.headers = Object.assign({"authorization":"Bearer " + pw, "content-type":"application/json"}, opts.headers || {});
+    return fetch(path, opts).then(function(r){ return r.json().then(function(j){ if (r.status === 401) { logout(); throw new Error(j.error || "Kata laluan salah."); } if (!j.ok) throw new Error(j.error || "Ralat"); return j; }); });
+  }
+  function logout(){ pw = ""; try { sessionStorage.removeItem(KEY); } catch(e){} $("#app").hidden = true; $("#logout").hidden = true; $("#login").hidden = false; }
+
+  $("#login").addEventListener("submit", function(e){
+    e.preventDefault(); pw = $("#pw").value; $("#login-err").textContent = "";
+    api("/api/admin/orders?status=paid").then(function(j){
+      try { sessionStorage.setItem(KEY, pw); } catch(e){}
+      start(j);
+    }).catch(function(err){ $("#login-err").textContent = err.message; });
+  });
+  $("#logout").addEventListener("click", logout);
+
+  function start(first){
+    $("#login").hidden = true; $("#app").hidden = false; $("#logout").hidden = false;
+    if (first){ data = first.orders; counts = first.counts; render(); } else load();
+  }
+  function load(){
+    $("#list").innerHTML = '<p class="empty">Memuatkan…</p>';
+    if (tab === "customers"){
+      return api("/api/admin/customers").then(function(j){ customers = j.customers; render(); }).catch(function(e){ $("#list").innerHTML = '<p class="empty">'+esc(e.message)+'</p>'; });
+    }
+    api("/api/admin/orders?status=" + tab).then(function(j){ data = j.orders; counts = j.counts; render(); }).catch(function(e){ $("#list").innerHTML = '<p class="empty">'+esc(e.message)+'</p>'; });
+  }
+  function matchQ(o){
+    var q = $("#q").value.trim().toLowerCase(); if (!q) return true;
+    return [o.id, o.name, o.phone, o.email, o.city, o.state].join(" ").toLowerCase().indexOf(q) >= 0;
+  }
+  function addrText(o){ return o.name + "\n" + o.phone + "\n" + o.addr1 + (o.addr2 ? "\n" + o.addr2 : "") + "\n" + o.postcode + " " + o.city + "\n" + o.state; }
+  function render(){
+    Array.prototype.forEach.call(document.querySelectorAll("[data-count]"), function(b){ b.textContent = counts[b.getAttribute("data-count")] || 0; });
+    if (tab === "customers"){
+      var cs = customers.filter(matchQ);
+      if (!cs.length){ $("#list").innerHTML = '<p class="empty">Tiada customer lagi.</p>'; return; }
+      $("#list").innerHTML = '<p class="meta">'+cs.length+' customer · '+cs.filter(function(c){ return c.consent; }).length+' setuju terima promo</p><div class="tablewrap"><table><thead><tr><th>Nama</th><th>Telefon</th><th>Emel</th><th>Lokasi</th><th>Order dibayar</th><th>Promo</th><th>Kemas kini</th></tr></thead><tbody>'+
+        cs.map(function(c){ return '<tr><td>'+esc(c.name)+'</td><td>'+esc(c.phone)+'</td><td>'+esc(c.email)+'</td><td>'+esc(c.city)+', '+esc(c.state)+'</td><td>'+c.order_count+'</td><td>'+(c.consent?'Ya':'Tidak')+'</td><td>'+dt(c.updated_at)+'</td></tr>'; }).join("")+
+        '</tbody></table></div>';
+      return;
+    }
+    var os = data.filter(matchQ);
+    if (!os.length){ $("#list").innerHTML = '<p class="empty">Tiada order dalam senarai ini.</p>'; return; }
+    $("#list").innerHTML = os.map(function(o){
+      var items = o.items.map(function(it){ return '<li><span>'+esc(it.name)+(it.size!=="test" ? ' '+esc(it.size)+' · '+esc(it.grind_label) : '')+' × '+it.qty+'</span><span>'+sen(it.line)+'</span></li>'; }).join("");
+      var ship = o.status === "paid"
+        ? '<label class="meta" for="trk-'+esc(o.id)+'">No. tracking</label><input type="text" id="trk-'+esc(o.id)+'" placeholder="contoh SPXMY0123456789"><button class="btn sm gold" type="button" data-ship="'+esc(o.id)+'">Tandakan Dipos</button>'
+        : o.status === "shipped"
+          ? '<p class="meta">Dipos '+dt(o.shipped_at)+'</p><p><b>'+esc(o.tracking || "-")+'</b></p>'
+          : o.status === "pending"
+            ? '<p class="meta">Customer belum selesai bayar.</p><button class="btn sm" type="button" data-refresh="'+esc(o.id)+'">Semak dengan CHIP</button>'
+            : '<p class="meta">Bayaran gagal atau dibatalkan.</p>';
+      return '<article class="order">'+
+        '<div><div class="oid">'+esc(o.id)+'<span class="pill st-'+o.status+'">'+(LABEL[o.status]||o.status)+'</span>'+(o.is_test?' <span class="test">TEST</span>':'')+'</div>'+
+          '<p class="meta">Order '+dt(o.created_at)+(o.paid_at ? ' · Bayar '+dt(o.paid_at) : '')+'</p>'+
+          '<ul class="items">'+items+'</ul>'+
+          '<div class="meta" style="display:flex;justify-content:space-between"><span>Pos</span><span>'+sen(o.postage)+'</span></div>'+
+          '<div class="tot"><span>Jumlah</span><span>'+sen(o.total)+'</span></div>'+
+          (o.note ? '<p class="note">Nota: '+esc(o.note)+'</p>' : '')+
+        '</div>'+
+        '<div><p class="meta">Penghantaran · '+esc(o.email)+'</p><div class="addr">'+esc(addrText(o))+'</div><button class="btn sm" type="button" data-copy="'+esc(o.id)+'" style="margin-top:8px">Salin alamat</button></div>'+
+        '<div class="ship">'+ship+'</div>'+
+      '</article>';
+    }).join("");
+  }
+  $("#tabs").addEventListener("click", function(e){
+    var b = e.target.closest("[data-st]"); if (!b) return;
+    tab = b.getAttribute("data-st");
+    Array.prototype.forEach.call(document.querySelectorAll("#tabs .tab"), function(x){ x.setAttribute("aria-pressed", x===b ? "true" : "false"); });
+    load();
+  });
+  $("#q").addEventListener("input", render);
+  $("#reload").addEventListener("click", load);
+  $("#list").addEventListener("click", function(e){
+    var s = e.target.closest("[data-ship]");
+    if (s){
+      var id = s.getAttribute("data-ship"), trk = document.getElementById("trk-" + id).value.trim();
+      if (!trk){ toast("Masukkan no. tracking dulu."); return; }
+      s.disabled = true;
+      api("/api/admin/ship", {method:"POST", body: JSON.stringify({id:id, tracking:trk})}).then(function(){ toast(id + " ditandakan Dipos."); load(); }).catch(function(err){ s.disabled = false; toast(err.message); });
+      return;
+    }
+    var r = e.target.closest("[data-refresh]");
+    if (r){
+      r.disabled = true;
+      api("/api/admin/refresh", {method:"POST", body: JSON.stringify({id:r.getAttribute("data-refresh")})}).then(function(j){ toast("Status: " + (LABEL[j.status] || j.status)); load(); }).catch(function(err){ r.disabled = false; toast(err.message); });
+      return;
+    }
+    var c = e.target.closest("[data-copy]");
+    if (c){
+      var o = data.filter(function(x){ return x.id === c.getAttribute("data-copy"); })[0];
+      navigator.clipboard.writeText(addrText(o)).then(function(){ toast("Alamat disalin."); }, function(){ toast("Tidak dapat salin. Pilih teks alamat secara manual."); });
+    }
+  });
+  function csvCell(v){ v = String(v==null?"":v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g,'""') + '"' : v; }
+  $("#csv").addEventListener("click", function(){
+    var rows;
+    if (tab === "customers"){
+      rows = [["Nama","Telefon","Emel","Bandar","Negeri","Order dibayar","Setuju promo","Kemas kini"]].concat(customers.filter(matchQ).map(function(c){ return [c.name,c.phone,c.email,c.city,c.state,c.order_count,c.consent?"Ya":"Tidak",c.updated_at]; }));
+    } else {
+      rows = [["No. Order","Status","Tarikh","Nama","Telefon","Emel","Alamat 1","Alamat 2","Poskod","Bandar","Negeri","Item","Berat (kg)","Subtotal (RM)","Pos (RM)","Jumlah (RM)","Nota","Tracking"]].concat(data.filter(matchQ).map(function(o){
+        var kg = o.items.reduce(function(a,it){ return a + (it.size==="1kg"?1:it.size==="500g"?0.5:0) * it.qty; }, 0);
+        return [o.id, LABEL[o.status]||o.status, o.created_at, o.name, o.phone, o.email, o.addr1, o.addr2, o.postcode, o.city, o.state,
+          o.items.map(function(it){ return it.name + (it.size!=="test" ? " " + it.size + " " + it.grind_label : "") + " x" + it.qty; }).join("; "),
+          kg, (o.subtotal/100).toFixed(2), (o.postage/100).toFixed(2), (o.total/100).toFixed(2), o.note, o.tracking];
+      }));
+    }
+    var csv = "﻿" + rows.map(function(r){ return r.map(csvCell).join(","); }).join("\r\n");
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([csv], {type:"text/csv;charset=utf-8"}));
+    a.download = "heetam-" + tab + "-" + new Date().toISOString().slice(0,10) + ".csv";
+    document.body.appendChild(a); a.click(); a.remove();
+  });
+
+  if (pw) start();
+})();
+</script>
+</body>
+</html>

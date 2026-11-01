@@ -509,22 +509,26 @@ legend{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:upperc
     {id:"italian-mafia", name:"Italian Mafia", cat:"House Blend", tag:"House Blend", strong:true, origin:"Brazil & Java", bean:"60% Arabica · 40% Robusta", aroma:"Strong & Bold", notes:"Robust, Sweet but Charred Flavor", body:"Full & Rounded", acid:"Bright", after:"Strong, Sweet but Charred", roast:"Dark", price:{"500g":54.9,"1kg":85}}
   ];
   var GRINDS = [{v:"whole", l:"Whole Bean", d:"Biji penuh"}, {v:"fine", l:"Halus", d:"Ground"}];
-  var KG = {"500g":0.5, "1kg":1};
+  var KG = {"500g":0.5, "1kg":1, "test":0};
   var STATES = ["Johor","Kedah","Kelantan","Melaka","Negeri Sembilan","Pahang","Perak","Perlis","Pulau Pinang","Sabah","Sarawak","Selangor","Terengganu","W.P. Kuala Lumpur","W.P. Labuan","W.P. Putrajaya"];
   var EAST = ["Sabah","Sarawak","W.P. Labuan"];
   var STORE_KEY = "heetam_demo_customers";
-  var DEMO_CUSTOMER = {"0123456789":{name:"Contoh Pelanggan", email:"contoh@email.com", addr1:"No. 12, Jalan Kopi 3", addr2:"Taman Aroma", postcode:"47000", city:"Sungai Buloh", state:"Selangor"}};
+  var DEMO_CUSTOMER = {};
+  var WA_LINK = "https://wa.me/60139226788";
+  var TEST_MODE = /[?&]test=1\b/.test(location.search);
+  PRODUCTS.push({id:"test-order", name:"Test Order", cat:"_test", tag:"Test", hidden:true, origin:"-", bean:"-", aroma:"-", notes:"Order ujian RM1.00 tanpa pos", body:"-", acid:"-", after:"-", roast:"-", img:"img/logo.png", price:{"test":1}});
   var TICKER = ["Milk Chocolate","Nutty Caramel","Jasmine","Butterscotch","Dark Chocolate","Clove","Toasted Caramel","Cinnamon","Malt","Smoky Finish","Citrus Blossom","Strong Bold"];
 
-  var PAYMENT_LIVE = false; /* tukar ke true bila integrasi CHIP siap */
+  var PAYMENT_LIVE = true;
   var cart = [], lastOrder = null, filter = "all";
 
   function $(s, r){ return (r||document).querySelector(s); }
   function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
   function rm(n){ return "RM" + n.toFixed(2); }
   function prod(id){ for (var i=0;i<PRODUCTS.length;i++) if (PRODUCTS[i].id===id) return PRODUCTS[i]; return null; }
-  function bagSrc(p){ return "img/" + p.id + "-bag.jpg"; }
+  function bagSrc(p){ return p.img || ("img/" + p.id + "-bag.jpg"); }
   function posterSrc(p){ return "img/" + p.id + "-poster.jpg"; }
+  function metaLabel(c){ return c.id==="test-order" ? "Test" : c.size + " · " + grindLabel(c.grind); }
   function grindLabel(v){ for (var i=0;i<GRINDS.length;i++) if (GRINDS[i].v===v) return GRINDS[i].l; return v; }
   function normPhone(p){ var d = String(p||"").replace(/\D/g,""); if (d.indexOf("60")===0) d = "0" + d.slice(2); return d; }
   var toastTimer;
@@ -546,7 +550,7 @@ legend{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:upperc
   /* ---------- Grid ---------- */
   function renderGrid(){
     var html = "";
-    PRODUCTS.filter(function(p){ return filter==="all" || p.cat===filter; }).forEach(function(p){
+    PRODUCTS.filter(function(p){ return !p.hidden && (filter==="all" || p.cat===filter); }).forEach(function(p){
       html += '<article class="card">'+
         '<button class="card-img" type="button" data-open="'+p.id+'" aria-label="Lihat '+esc(p.name)+'">'+
           '<img src="'+bagSrc(p)+'" alt="Beg kopi Heetam '+esc(p.name)+'" loading="lazy" width="450" height="600">'+
@@ -667,6 +671,7 @@ legend{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:upperc
   }
   function updateCount(bump){
     $("#cart-count").textContent = cart.reduce(function(a,c){ return a+c.qty; }, 0);
+    lsSet("heetam_cart", cart);
     if (bump){ var b = $("#cart-open"); b.classList.remove("bump"); void b.offsetWidth; b.classList.add("bump"); }
   }
   function kgLabel(kg){ return (kg % 1 === 0 ? kg.toFixed(0) : kg.toFixed(1)) + "kg"; }
@@ -685,7 +690,7 @@ legend{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:upperc
     $("#cart-body").innerHTML = cart.map(function(c, i){
       var p = prod(c.id);
       return '<div class="line-item"><img src="'+bagSrc(p)+'" alt="" width="60" height="80">'+
-        '<div><div class="li-name">'+esc(p.name)+'</div><div class="li-meta">'+c.size+' · '+grindLabel(c.grind)+'</div>'+
+        '<div><div class="li-name">'+esc(p.name)+'</div><div class="li-meta">'+metaLabel(c)+'</div>'+
         '<div class="li-actions"><div class="qty"><button type="button" data-cq="'+i+'" data-d="-1" aria-label="Kurang">−</button><output>'+c.qty+'</output><button type="button" data-cq="'+i+'" data-d="1" aria-label="Tambah">+</button></div>'+
         '<button class="link-btn" type="button" data-rm="'+i+'">Buang</button></div></div>'+
         '<div class="li-price">'+rm(p.price[c.size]*c.qty)+'</div></div>';
@@ -709,7 +714,7 @@ legend{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:upperc
   function itemsHTML(){
     return cart.map(function(c){
       var p = prod(c.id);
-      return '<div class="sum-item"><img src="'+bagSrc(p)+'" alt="" width="44" height="58"><div><div class="li-name">'+esc(p.name)+' × '+c.qty+'</div><div class="li-meta">'+c.size+' · '+grindLabel(c.grind)+'</div></div><span class="li-price">'+rm(p.price[c.size]*c.qty)+'</span></div>';
+      return '<div class="sum-item"><img src="'+bagSrc(p)+'" alt="" width="44" height="58"><div><div class="li-name">'+esc(p.name)+' × '+c.qty+'</div><div class="li-meta">'+metaLabel(c)+'</div></div><span class="li-price">'+rm(p.price[c.size]*c.qty)+'</span></div>';
     }).join("");
   }
   function field(id, label, type, attrs, wide, optional){
@@ -727,7 +732,7 @@ legend{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:upperc
           '<fieldset><legend>1 · Maklumat Hubungan</legend>'+
             '<div class="field wide"><label for="f-phone">No. telefon</label>'+
               '<input id="f-phone" name="f-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="012-345 6789" aria-describedby="f-phone-hint f-phone-err">'+
-              '<span class="hint" id="f-phone-hint">Pernah order? Masukkan no. telefon, nama dan alamat akan diisi sendiri. (Demo: cuba 012-345 6789)</span>'+
+              '<span class="hint" id="f-phone-hint">Pernah order dari peranti ini? Masukkan no. telefon, nama dan alamat akan diisi sendiri.</span>'+
               '<span class="err" id="f-phone-err"></span></div>'+
             '<div class="welcome" id="welcome" hidden></div>'+
             field("f-name","Nama penuh penerima","text",'autocomplete="name"')+
@@ -789,8 +794,7 @@ legend{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:upperc
       Object.keys(V).forEach(function(id){ if (!check(id) && !bad) bad = $("#"+id); });
       if (bad){ bad.focus(); toast("Sila lengkapkan maklumat yang bertanda merah."); return; }
       if (!PAYMENT_LIVE){ $("#pay-soon").hidden = false; toast("Bayaran online akan dibuka tidak lama lagi."); return; }
-      var btn = $("#pay-btn"); btn.disabled = true; btn.textContent = "Menyambung ke CHIP…";
-      setTimeout(placeOrder, 1100);
+      startPayment();
     });
   }
   function lookup(){
@@ -805,35 +809,73 @@ legend{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:upperc
     var w = $("#welcome"); w.hidden = false;
     w.innerHTML = "Selamat kembali, <b>"+esc(c.name.split(" ")[0])+"</b>! Alamat lepas dah diisi. Semak sekali lagi sebelum bayar.";
   }
-  function placeOrder(){
+  function lsGet(k){ try { return JSON.parse(localStorage.getItem(k) || "null"); } catch(e){ return null; } }
+  function lsSet(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+  function startPayment(){
     var d = function(id){ return $("#"+id).value.trim(); };
     var phone = normPhone(d("f-phone"));
-    var cust = {name:d("f-name"), email:d("f-email"), addr1:d("f-addr1"), addr2:d("f-addr2"), postcode:d("f-postcode"), city:d("f-city"), state:d("f-state")};
-    saveCustomer(phone, cust);
-    var now = new Date();
-    var ymd = String(now.getFullYear()).slice(2) + String(now.getMonth()+1).padStart(2,"0") + String(now.getDate()).padStart(2,"0");
-    var no = "HTM-" + ymd + "-" + String(Math.floor(1000 + Math.random()*9000));
-    var t = totals(), items = itemsHTML();
-    lastOrder = cart.map(function(c){ return {id:c.id, size:c.size, grind:c.grind, qty:c.qty}; });
-    var addr = esc(cust.addr1) + (cust.addr2 ? "<br>"+esc(cust.addr2) : "") + "<br>" + esc(cust.postcode) + " " + esc(cust.city) + ", " + esc(cust.state);
-    cart = []; updateCount();
+    var cust = {phone:phone, name:d("f-name"), email:d("f-email"), addr1:d("f-addr1"), addr2:d("f-addr2"), postcode:d("f-postcode"), city:d("f-city"), state:d("f-state")};
+    var btn = $("#pay-btn"), msg = $("#pay-soon"), label = btn.textContent;
+    btn.disabled = true; btn.textContent = "Menyambung ke CHIP…"; msg.hidden = true;
+    fetch("/api/checkout", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({
+      customer: cust, note: d("f-note"), consent: $("#f-consent").checked,
+      items: cart.map(function(c){ return {id:c.id, size:c.size, grind:c.grind, qty:c.qty}; })
+    })}).then(function(r){ return r.json(); }).then(function(res){
+      if (!res.ok || !res.checkout_url) throw new Error(res.error || "Tidak dapat sambung ke CHIP.");
+      saveCustomer(phone, {name:cust.name, email:cust.email, addr1:cust.addr1, addr2:cust.addr2, postcode:cust.postcode, city:cust.city, state:cust.state});
+      lsSet("heetam_last_order", cart.map(function(c){ return {id:c.id, size:c.size, grind:c.grind, qty:c.qty}; }));
+      lsSet("heetam_cart", cart);
+      location.href = res.checkout_url;
+    }).catch(function(err){
+      btn.disabled = false; btn.textContent = label;
+      msg.textContent = (err && err.message) || "Tidak dapat sambung ke CHIP. Sila cuba lagi.";
+      msg.hidden = false;
+    });
+  }
+  function sen(n){ return "RM" + (n/100).toFixed(2); }
+  function showReturn(id, t, s){
+    $("#co-view").innerHTML = '<div class="success"><p class="small">Menyemak status bayaran…</p></div>';
+    openLayer($("#checkout"));
+    var tries = 0;
+    (function poll(){
+      fetch("/api/order?id=" + encodeURIComponent(id) + "&t=" + encodeURIComponent(t)).then(function(r){ return r.json(); }).then(function(res){
+        if (!res.ok) throw new Error(res.error || "Order tidak dijumpai.");
+        var o = res.order;
+        if (o.status === "pending" && s === "ok" && tries++ < 6){ setTimeout(poll, 2000); return; }
+        renderReturn(o);
+      }).catch(function(err){
+        $("#co-view").innerHTML = '<div class="success"><h2>Order tidak dijumpai</h2><p>'+esc(err.message)+'</p><div class="actions"><button class="btn" type="button" data-close>Kembali ke kedai</button></div></div>';
+      });
+    })();
+  }
+  function renderReturn(o){
+    var paid = o.status === "paid" || o.status === "shipped";
+    if (paid){ cart = []; updateCount(); lsSet("heetam_cart", []); lastOrder = lsGet("heetam_last_order"); }
+    else { var saved = lsGet("heetam_cart"); if (saved && saved.length && !cart.length){ cart = saved; updateCount(); } }
+    var items = o.items.map(function(it){
+      var p = prod(it.id);
+      return '<div class="sum-item"><img src="'+(p ? bagSrc(p) : "img/logo.png")+'" alt="" width="44" height="58"><div><div class="li-name">'+esc(it.name)+' × '+it.qty+'</div><div class="li-meta">'+esc(it.size==="test"?"Test":it.size)+(it.grind_label && it.grind_label!=="-" ? ' · '+esc(it.grind_label) : '')+'</div></div><span class="li-price">'+sen(it.line)+'</span></div>';
+    }).join("");
+    var addr = esc(o.addr1) + (o.addr2 ? "<br>"+esc(o.addr2) : "") + "<br>" + esc(o.postcode) + " " + esc(o.city) + ", " + esc(o.state);
+    var first = esc(String(o.name).split(" ")[0]);
+    var head = paid
+      ? '<div class="tick" aria-hidden="true">✓</div><h2 tabindex="-1" id="ok-title">Terima Kasih, <span class="gold-text">'+first+'!</span></h2><p>Bayaran diterima. Order <span class="order-no">'+esc(o.id)+'</span> sedang diproses. Resit dihantar ke <b>'+esc(o.email)+'</b>.</p>'
+      : o.status === "pending"
+        ? '<h2 tabindex="-1" id="ok-title">Bayaran Belum Disahkan</h2><p>Kami belum terima pengesahan bayaran untuk order <span class="order-no">'+esc(o.id)+'</span>. Kalau anda dah bayar, tunggu sebentar dan muat semula page ini. Kalau belum, sila cuba checkout semula.</p>'
+        : '<h2 tabindex="-1" id="ok-title">Bayaran Tidak Berjaya</h2><p>Bayaran untuk order <span class="order-no">'+esc(o.id)+'</span> tidak berjaya atau dibatalkan. Tiada caj dibuat. Item anda masih dalam cart.</p>';
+    var actions = paid
+      ? '<button class="btn gold" type="button" id="repeat">Order Lagi</button><button class="btn" type="button" data-close>Kembali ke kedai</button><button class="btn" type="button" id="wa-heetam">WhatsApp Heetam</button>'
+      : '<button class="btn gold" type="button" id="retry">Cuba Checkout Semula</button><button class="btn" type="button" data-close>Kembali ke kedai</button><button class="btn" type="button" id="wa-heetam">WhatsApp Heetam</button>';
     $("#co-view").innerHTML =
-      '<div class="success">'+
-        '<div class="tick" aria-hidden="true">✓</div>'+
-        '<h2 tabindex="-1" id="ok-title">Terima Kasih, <span class="gold-text">'+esc(cust.name.split(" ")[0])+'!</span></h2>'+
-        '<p>Order <span class="order-no">'+no+'</span> diterima. Resit dihantar ke <b>'+esc(cust.email)+'</b>.</p>'+
+      '<div class="success">'+head+
         '<div class="box"><p class="eyebrow">Ringkasan</p>'+items+
-          '<div class="totals"><div><span>Pos</span><span class="num">'+rm(t.post)+'</span></div><div class="grand"><span>Jumlah dibayar</span><span class="num">'+rm(t.total)+'</span></div></div></div>'+
-        '<div class="box"><p class="eyebrow">Dihantar kepada</p><p><b>'+esc(cust.name)+'</b> · '+esc(d("f-phone"))+'</p><p style="color:var(--muted)">'+addr+'</p></div>'+
-        '<p class="small">Heetam akan roast dan pos order anda. Tracking number akan dihantar melalui WhatsApp atau emel.</p>'+
-        '<div class="actions">'+
-          '<button class="btn gold" type="button" id="repeat">Order Lagi</button>'+
-          '<button class="btn" type="button" data-close>Kembali ke kedai</button>'+
-          '<button class="btn" type="button" id="wa-heetam">WhatsApp Heetam</button>'+
-        '</div>'+
+          '<div class="totals"><div><span>Pos</span><span class="num">'+sen(o.postage)+'</span></div><div class="grand"><span>'+(paid?'Jumlah dibayar':'Jumlah')+'</span><span class="num">'+sen(o.total)+'</span></div></div></div>'+
+        '<div class="box"><p class="eyebrow">Dihantar kepada</p><p><b>'+esc(o.name)+'</b> · '+esc(o.phone)+'</p><p style="color:var(--muted)">'+addr+'</p></div>'+
+        (paid ? '<p class="small">Heetam akan roast dan pos order anda. Tracking number akan dihantar melalui WhatsApp atau emel.</p>' : '')+
+        '<div class="actions">'+actions+'</div>'+
       '</div>';
     $("#checkout").scrollTop = 0;
-    $("#ok-title").focus({preventScroll:true});
+    var h = $("#ok-title"); if (h) h.focus({preventScroll:true});
   }
   $("#checkout").addEventListener("click", function(e){
     if (e.target.closest("#repeat") && lastOrder){
@@ -841,14 +883,15 @@ legend{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:upperc
       closeLayer($("#checkout"));
       setTimeout(openCart, 300);
     }
-    if (e.target.closest("#wa-heetam")) toast("Butang ini akan buka WhatsApp Heetam bila nombor dimasukkan.");
+    if (e.target.closest("#wa-heetam")) window.open(WA_LINK, "_blank", "noopener");
+    if (e.target.closest("#retry")){ closeLayer($("#checkout")); setTimeout(openCheckout, 320); }
   });
 
   /* ---------- Lain-lain ---------- */
   $("#grid").addEventListener("click", function(e){ var b = e.target.closest("[data-open]"); if (b) openSheet(b.getAttribute("data-open")); });
   $("#filters").addEventListener("click", function(e){ var c = e.target.closest("[data-filter]"); if (c) setFilter(c.getAttribute("data-filter")); });
   Array.prototype.forEach.call(document.querySelectorAll("[data-jump]"), function(a){ a.addEventListener("click", function(){ setFilter(a.getAttribute("data-jump")); }); });
-  $("#fab").addEventListener("click", function(){ toast("Butang ini akan buka WhatsApp Heetam bila nombor dimasukkan."); });
+  $("#fab").addEventListener("click", function(){ window.open(WA_LINK, "_blank", "noopener"); });
   $("#news-form").addEventListener("submit", function(e){
     e.preventDefault();
     var v = $("#news-email").value.trim();
@@ -857,6 +900,22 @@ legend{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:upperc
   });
 
   renderGrid();
+  if (TEST_MODE){
+    var tb = document.createElement("button");
+    tb.type = "button"; tb.className = "btn"; tb.textContent = "Tambah Test Order RM1.00";
+    tb.style.cssText = "position:fixed;left:calc(18px + env(safe-area-inset-left,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--surface)";
+    tb.addEventListener("click", function(){ addToCart("test-order","test","whole",1); openCart(); });
+    document.body.appendChild(tb);
+  }
+  (function(){
+    var q = new URLSearchParams(location.search);
+    if (q.get("order") && q.get("t")){
+      showReturn(q.get("order"), q.get("t"), q.get("s") || "");
+      try { history.replaceState(null, "", location.pathname + (TEST_MODE ? "?test=1" : "")); } catch(e){}
+    } else {
+      var saved = lsGet("heetam_cart"); if (saved && saved.length){ cart = saved.filter(function(c){ return prod(c.id); }); updateCount(); }
+    }
+  })();
 })();
 </script>
 <script src="/contact.js"></script>
