@@ -448,7 +448,7 @@ legend{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:upperc
           <button class="btn gold" type="submit">Subscribe</button>
         </form>
         <div class="pay-row"><span class="pay-chip">FPX ONLINE BANKING</span><span class="pay-chip">DUITNOW</span></div>
-        <p class="small" style="margin-top:10px">Secure payment by CHIP</p>
+        <p class="small" style="margin-top:10px">Secure online payment</p>
       </div>
     </div>
     <div class="foot-base"><span>© 2026 HEETAMCOFF ROASTERY EMPIRE (202403341148)</span><span><a href="/refund-policy">Refund &amp; Return Policy</a> · <a href="/privacy-policy">Privacy Policy</a></span></div>
@@ -764,9 +764,9 @@ legend{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:upperc
           '</fieldset>'+
         '</div>'+
         '<aside class="summary" aria-label="Ringkasan order"><h3>Ringkasan Order</h3>'+itemsHTML()+totalsHTML(t)+
-          '<button class="btn gold block" type="submit" id="pay-btn">Bayar '+rm(t.total)+' dengan CHIP</button>'+
+          '<button class="btn gold block" type="submit" id="pay-btn">Bayar '+rm(t.total)+'</button>'+
           '<div class="pay-methods"><span class="pay-chip">FPX</span><span class="pay-chip">DUITNOW</span></div>'+
-          '<p class="small">Anda akan dibawa ke halaman bayaran CHIP yang selamat. Dengan membuat bayaran, anda bersetuju dengan <a href="/refund-policy">Refund &amp; Return Policy</a> dan <a href="/privacy-policy">Privacy Policy</a> kami.</p>'+
+          '<p class="small">Anda akan dibawa ke halaman bayaran yang selamat. Dengan membuat bayaran, anda bersetuju dengan <a href="/refund-policy">Refund &amp; Return Policy</a> dan <a href="/privacy-policy">Privacy Policy</a> kami.</p>'+
           '<p class="pay-soon" id="pay-soon" hidden>Bayaran online sedang dalam proses pengaktifan dan akan dibuka tidak lama lagi. Order anda belum dihantar.</p>'+
         '</aside>'+
       '</form>';
@@ -828,19 +828,19 @@ legend{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:upperc
     var phone = normPhone(d("f-phone"));
     var cust = {phone:phone, name:d("f-name"), email:d("f-email"), addr1:d("f-addr1"), addr2:d("f-addr2"), postcode:d("f-postcode"), city:d("f-city"), state:d("f-state")};
     var btn = $("#pay-btn"), msg = $("#pay-soon"), label = btn.textContent;
-    btn.disabled = true; btn.textContent = "Menyambung ke CHIP…"; msg.hidden = true;
+    btn.disabled = true; btn.textContent = "Menyambung ke halaman bayaran…"; msg.hidden = true;
     fetch("/api/checkout", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({
       customer: cust, note: d("f-note"), consent: $("#f-consent").checked,
       items: cart.map(function(c){ return {id:c.id, size:c.size, grind:c.grind, qty:c.qty}; })
     })}).then(function(r){ return r.json(); }).then(function(res){
-      if (!res.ok || !res.checkout_url) throw new Error(res.error || "Tidak dapat sambung ke CHIP.");
+      if (!res.ok || !res.checkout_url) throw new Error(res.error || "Tidak dapat sambung ke halaman bayaran.");
       saveCustomer(phone, {name:cust.name, email:cust.email, addr1:cust.addr1, addr2:cust.addr2, postcode:cust.postcode, city:cust.city, state:cust.state});
       lsSet("heetam_last_order", cart.map(function(c){ return {id:c.id, size:c.size, grind:c.grind, qty:c.qty}; }));
       lsSet("heetam_cart", cart);
       location.href = res.checkout_url;
     }).catch(function(err){
       btn.disabled = false; btn.textContent = label;
-      msg.textContent = (err && err.message) || "Tidak dapat sambung ke CHIP. Sila cuba lagi.";
+      msg.textContent = (err && err.message) || "Tidak dapat sambung ke halaman bayaran. Sila cuba lagi.";
       msg.hidden = false;
     });
   }

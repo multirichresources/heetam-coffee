@@ -190,7 +190,7 @@ async function handleCheckout(request, env) {
   if (!r.ok || !r.body.checkout_url) {
     await env.DB.prepare("UPDATE orders SET status='failed' WHERE id=?").bind(id).run();
     console.log("CHIP create failed", r.status, JSON.stringify(r.body).slice(0, 500));
-    return json({ ok: false, error: "Tidak dapat sambung ke CHIP. Sila cuba sebentar lagi." }, 502);
+    return json({ ok: false, error: "Tidak dapat sambung ke halaman bayaran. Sila cuba sebentar lagi." }, 502);
   }
   await env.DB.prepare("UPDATE orders SET chip_id=? WHERE id=?").bind(r.body.id, id).run();
   return json({ ok: true, order: id, checkout_url: r.body.checkout_url });
