@@ -696,7 +696,7 @@ legend{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:upperc
   function renderCart(){
     if (!cart.length){
       $("#cart-body").innerHTML = '<div class="empty"><p>Cart masih kosong. Pilih beans dulu.</p><button class="btn gold" type="button" id="go-shop">Shop Beans</button></div>';
-      $("#cart-foot").innerHTML = "";
+      $("#cart-foot").replaceChildren();
       return;
     }
     $("#cart-body").innerHTML = cart.map(function(c, i){

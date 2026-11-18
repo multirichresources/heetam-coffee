@@ -184,7 +184,7 @@ export function chooseService(quotes, state, preferred) {
   const usable = quotes.filter(q => q && q.courier && q.courier.service_id && isFinite(priceOf(q)) && isDoorDelivery(q));
   const pickup = usable.filter(q => q.courier.is_pickup);
   const pool = pickup.length ? pickup : usable;
-  const cheapest = list => list.slice().sort((a, b) => priceOf(a) - priceOf(b))[0] || null;
+  const cheapest = list => list.toSorted((a, b) => priceOf(a) - priceOf(b))[0] || null;
   let chosen = null, rule = "";
   if (!EAST.includes(state) && preferred) {
     const pref = pool.filter(q => (q.courier.courier_name + " " + q.courier.service_name).toUpperCase().includes(preferred.toUpperCase()));
@@ -192,7 +192,7 @@ export function chooseService(quotes, state, preferred) {
     rule = chosen ? "preferred" : "fallback";
   }
   if (!chosen) { chosen = cheapest(pool); rule = rule || "cheapest"; }
-  return { chosen, rule, options: pool.slice().sort((a, b) => priceOf(a) - priceOf(b)).slice(0, 8) };
+  return { chosen, rule, options: pool.toSorted((a, b) => priceOf(a) - priceOf(b)).slice(0, 8) };
 }
 function summarize(q) {
   return {
